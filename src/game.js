@@ -2,6 +2,7 @@ import Block from './block';
 import Floor from './floor';
 import Player from './player';
 import Spring from './spring';
+import Spike from './spike';
 import * as Util from './util';
 
 class Game {
@@ -15,7 +16,9 @@ class Game {
     this.floor = new Floor(this.width, floorSize);
     // this.boxes = [new Block(this.boxSize, this.boxSize, [this.width, this.height - (floorSize + this.boxSize)]), new Block(this.boxSize, this.boxSize, [this.width + (2 * this.boxSize), this.height - (floorSize + 2 * this.boxSize)])];
     this.boxes = [];
-    this.springs = [new Spring(this.boxSize, this.boxSize, [this.width + (5 * this.boxSize), this.height - floorSize])];
+    // this.springs = [new Spring(this.boxSize, this.boxSize, [this.width + (5 * this.boxSize), this.height - floorSize])];
+    this.springs = [];
+    this.spikes = [new Spike(this.boxSize / 3, this.boxSize * 0.3, [this.width, this.height - (floorSize + (this.boxSize * 0.3))]), new Spike(this.boxSize / 3, this.boxSize * 0.8, [this.width + this.boxSize, this.height - (floorSize + (this.boxSize * 0.8))])];
   }
 
   draw(ctx) {
@@ -32,7 +35,7 @@ class Game {
   }
 
   movingObjects() {
-    return ([].concat(this.boxes, this.springs));
+    return ([].concat(this.boxes, this.springs, this.spikes));
   }
 
   step() {
@@ -47,10 +50,13 @@ class Game {
         this.player.speed = 2;
         break;
     }
-    if (this.checkSpringCollisions() === 'top') {
-      this.player.jump(200);
+    if (this.checkSpikeCollisions() !== 'none') {
+      console.log('dead');
     }
-    if (key.isPressed('space')) this.player.jump(100);
+    if (this.checkSpringCollisions() === 'top') {
+      this.player.jump(this.height / 4);
+    }
+    if (key.isPressed('space')) this.player.jump(this.height / 4);
     this.move();
   }
 
@@ -59,6 +65,16 @@ class Game {
       object.move();
     });
     this.player.move();
+  }
+
+  checkSpikeCollisions() {
+    for (let i = 0; i < this.spikes.length; i += 1) {
+      const spike = this.spikes[i];
+      if (Util.checkCollision(this.player, spike) !== 'none') {
+        return 'collision';
+      }
+    }
+    return 'none';
   }
 
   checkSpringCollisions() {
