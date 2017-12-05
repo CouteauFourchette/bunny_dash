@@ -4,18 +4,25 @@ class Player {
     this.height = height;
     this.pos = initialPos;
     this.speed = 0.5;
-    this.jump = false;
+    this.jumpHeight = -1;
   }
 
   move() {
-    if (this.jump) {
-      if (this.pos[1] > 200) {
-        this.speed = -0.5;
+    if (this.jumpHeight !== -1) {
+      if (this.pos[1] > this.jumpHeight) {
+        this.speed = -1;
       } else {
-        this.jump = false;
+        this.jumpHeight = -1;
+        this.speed = 0.5;
       }
     }
     this.pos[1] += this.speed;
+  }
+
+  jump(jumpHeight) {
+    if (this.speed === 0) {
+      this.jumpHeight = jumpHeight;
+    }
   }
 
   draw(ctx) {

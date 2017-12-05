@@ -29,22 +29,23 @@ class Game {
 
     this.boxes.forEach((box) => {
       box.draw(ctx);
-      console.log(box.pos);
     });
     this.player.draw(ctx);
   }
 
   step() {
-    switch (this.checkFloorCollisions()) {
-      case 'top':
-        this.player.speed = 0;
-        break;
-      case 'side':
-        this.player.speed = -100;
-        break;
-      default:
-        this.player.speed = 0.5;
-        break;
+    if (this.player.speed >= 0) {
+      switch (this.checkFloorCollisions()) {
+        case 'top':
+          this.player.speed = 0;
+          break;
+        case 'side':
+          this.player.speed = -100;
+          break;
+        default:
+          this.player.speed = 0.5;
+          break;
+      }
     }
     this.move();
   }
@@ -57,6 +58,8 @@ class Game {
   }
 
   checkFloorCollisions() {
+    let side = false;
+    let top = false;
     for (let i = 0; i < this.boxes.length; i += 1) {
       const box = this.boxes[i];
       const xDistance = (this.player.pos[0] + (this.player.width / 2)) - (box.pos[0] + (box.width / 2));
@@ -68,13 +71,20 @@ class Game {
 
       if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
         if (crossWidth > crossHeight) {
-          return 'side';
+          side = true;
         }
 
-        return 'top';
+        top = true;
       }
     }
+ 
+    if (side) return 'side';
+    if (top) return 'top';
     return 'none';
+  }
+
+  bindKeyHandlers() {
+    key('space', () => { this.player.jump(100); });
   }
 }
 
