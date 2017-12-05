@@ -3,36 +3,54 @@ class Player {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = 2;
+    this.speed = (this.height / 6);
     this.jumpHeight = -1;
-    this.image = new Image();
-    this.image.src = 'images/bunny1_walk1.png';
+    this.ticksPerFrame = 5;
+    this.tickCount = 0;
+    this.frameIndex = 0;
+    this.imageFrames = [];
+    const imageSources = ['images/bunny/bunny1_walk1.png', 'images/bunny/bunny1_walk2.png', 'images/bunny/bunny1_jump.png'];
+    for (let i = 0; i < 3; i += 1) {
+      const image = new Image();
+      image.src = imageSources[i];
+      this.imageFrames.push(image);
+    }
   }
 
-  move() {
+  move(delta) {
+    this.tickCount += 1;
+    if (this.tickCount > this.ticksPerFrame) {
+      this.frameIndex = this.frameIndex === 0 ? 1 : 0;
+      this.tickCount = 0;
+    }
     if (this.jumpHeight !== -1) {
       if (this.pos[1] > this.jumpHeight) {
-        this.speed = -3;
-        this.image.src = 'images/bunny1_jump.png';
+        this.speed = -(this.height / 6);
+        this.frameIndex = 2;
       } else {
-        this.image.src = 'images/bunny1_walk1.png';
         this.jumpHeight = -1;
-        this.speed = 3;
+        this.speed = (this.height / 6);
       }
     }
-    this.pos[1] += this.speed;
+    const velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
+    const offsetY = this.speed * velocityScale;
+    this.pos[1] += offsetY;
   }
 
   jump(jumpHeight) {
     if (this.speed === 0) {
-      this.image.src = 'images/bunny1_ready.png';
+      this.frameIndex = 3;
+      this.tickCount = 0;
       this.jumpHeight = this.pos[1] - jumpHeight;
     }
   }
 
   draw(ctx) {
-    ctx.drawImage(this.image, this.pos[0], this.pos[1] - (this.height * 0.66), this.width, this.height * 1.66);
+    const image = this.imageFrames[this.frameIndex];
+    ctx.drawImage(image, this.pos[0], this.pos[1] - (this.height * 0.66), this.width, this.height * 1.66);
   }
 }
+
+const NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 export default Player;

@@ -15,8 +15,10 @@ class Game {
     this.spikes = [];
     this.boxes = [];
     this.springs = [];
-    this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, 100]);
+    this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
     this.floor = new Floor(this.width, this.floorSize);
+    this.score = 0;
+    this.over = false;
   }
 
   draw(ctx) {
@@ -53,18 +55,19 @@ class Game {
     }
   }
 
-  step() {
+  step(delta) {
     this.checkCollisions();
     if (key.isPressed('space')) this.player.jump(this.height / 4);
-    this.move();
+    this.move(delta);
     this.spawn();
+    this.score += 1;
   }
 
-  move() {
+  move(delta) {
     this.movingObjects().forEach((object) => {
-      object.move();
+      object.move(delta);
     });
-    this.player.move();
+    this.player.move(delta);
   }
 
   checkCollisions() {
@@ -73,17 +76,17 @@ class Game {
         this.player.speed = 0;
         break;
       case 'side':
-        console.log('dead');
+        this.over = true;
         break;
       default:
-        this.player.speed = 2;
+        this.player.speed = (this.boxSize / 7);
         break;
     }
     if (this.checkSpikeCollisions() !== 'none') {
-      console.log('dead');
+      this.over = true;
     }
     if (this.checkSpringCollisions() === 'top') {
-      this.player.jump(this.height / 4);
+      this.player.jump(this.height / 3);
     }
   }
 
