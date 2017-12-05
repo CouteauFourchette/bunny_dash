@@ -1,24 +1,22 @@
-import Block from './block';
 import Floor from './floor';
 import Player from './player';
-import Spring from './spring';
-import Spike from './spike';
+import Spring from './moving_objects/spring';
+import Spike from './moving_objects/spike';
+import Block from './moving_objects/block';
+import LevelGenerator from './level_generator';
 import * as Util from './util';
 
 class Game {
   constructor(width, height) {
     this.width = width;
     this.height = height;
-    const floorSize = this.height / 5;
+    this.floorSize = this.height / 5;
     this.boxSize = this.height / 10;
-
-    this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, 100]);
-    this.floor = new Floor(this.width, floorSize);
-    // this.boxes = [new Block(this.boxSize, this.boxSize, [this.width, this.height - (floorSize + this.boxSize)]), new Block(this.boxSize, this.boxSize, [this.width + (2 * this.boxSize), this.height - (floorSize + 2 * this.boxSize)])];
+    this.spikes = [];
     this.boxes = [];
-    // this.springs = [new Spring(this.boxSize, this.boxSize, [this.width + (5 * this.boxSize), this.height - floorSize])];
     this.springs = [];
-    this.spikes = [new Spike(this.boxSize / 3, this.boxSize * 0.3, [this.width, this.height - (floorSize + (this.boxSize * 0.3))]), new Spike(this.boxSize / 3, this.boxSize * 0.8, [this.width + this.boxSize, this.height - (floorSize + (this.boxSize * 0.8))])];
+    this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, 100]);
+    this.floor = new Floor(this.width, this.floorSize);
   }
 
   draw(ctx) {
@@ -38,7 +36,38 @@ class Game {
     return ([].concat(this.boxes, this.springs, this.spikes));
   }
 
+  spawn() {
+    const object = LevelGenerator.generate(this.boxSize, this.floorSize, this.width, this.height);
+    switch (object.constructor) {
+      case Spike:
+        this.spikes.push(object);
+        break;
+      case Block:
+        this.boxes.push(object);
+        break;
+      case Spring:
+        this.springs.push(object);
+        break;
+      default:
+        break;
+    }
+  }
+
   step() {
+    this.checkCollisions();
+    if (key.isPressed('space')) this.player.jump(this.height / 4);
+    this.move();
+    this.spawn();
+  }
+
+  move() {
+    this.movingObjects().forEach((object) => {
+      object.move();
+    });
+    this.player.move();
+  }
+
+  checkCollisions() {
     switch (this.checkFloorCollisions()) {
       case 'top':
         this.player.speed = 0;
@@ -56,15 +85,6 @@ class Game {
     if (this.checkSpringCollisions() === 'top') {
       this.player.jump(this.height / 4);
     }
-    if (key.isPressed('space')) this.player.jump(this.height / 4);
-    this.move();
-  }
-
-  move() {
-    this.movingObjects().forEach((object) => {
-      object.move();
-    });
-    this.player.move();
   }
 
   checkSpikeCollisions() {
