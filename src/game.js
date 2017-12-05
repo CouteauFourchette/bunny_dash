@@ -1,5 +1,8 @@
 import Block from './block';
+import Floor from './floor';
 import Player from './player';
+import Spring from './spring';
+import * as Util from './util';
 
 class Game {
   constructor(width, height) {
@@ -9,8 +12,10 @@ class Game {
     this.boxSize = this.height / 10;
 
     this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, 100]);
-    this.floor = new Block(this.width, floorSize, [0, this.height - floorSize], 0);
-    this.boxes = [new Block(this.boxSize, this.boxSize, [this.width, this.height - (floorSize + this.boxSize)])];
+    this.floor = new Floor(this.width, floorSize);
+    // this.boxes = [new Block(this.boxSize, this.boxSize, [this.width, this.height - (floorSize + this.boxSize)]), new Block(this.boxSize, this.boxSize, [this.width + (2 * this.boxSize), this.height - (floorSize + 2 * this.boxSize)])];
+    this.boxes = [];
+    this.springs = [new Spring(this.boxSize, this.boxSize, [this.width + (5 * this.boxSize), this.height - floorSize])];
   }
 
   draw(ctx) {
@@ -20,10 +25,14 @@ class Game {
     
     this.floor.draw(ctx);
 
-    this.boxes.forEach((box) => {
-      box.draw(ctx);
+    this.movingObjects().forEach((object) => {
+      object.draw(ctx);
     });
     this.player.draw(ctx);
+  }
+
+  movingObjects() {
+    return ([].concat(this.boxes, this.springs));
   }
 
   step() {
@@ -38,15 +47,28 @@ class Game {
         this.player.speed = 2;
         break;
     }
+    if (this.checkSpringCollisions() === 'top') {
+      this.player.jump(200);
+    }
     if (key.isPressed('space')) this.player.jump(100);
     this.move();
   }
 
   move() {
-    this.boxes.forEach((box) => {
-      box.move();
+    this.movingObjects().forEach((object) => {
+      object.move();
     });
     this.player.move();
+  }
+
+  checkSpringCollisions() {
+    for (let i = 0; i < this.springs.length; i += 1) {
+      const spring = this.springs[i];
+      if (Util.checkCollision(this.player, spring) === 'top') {
+        return 'top';
+      }
+    }
+    return 'none';
   }
 
   checkFloorCollisions() {
@@ -55,26 +77,21 @@ class Game {
     const boxesAndFloor = this.boxes.concat([this.floor]);
     for (let i = 0; i < boxesAndFloor.length; i += 1) {
       const box = boxesAndFloor[i];
-      const xDistance = (this.player.pos[0] + (this.player.width / 2)) - (box.pos[0] + (box.width / 2));
-      const yDistance = (this.player.pos[1] + (this.player.height / 2)) - (box.pos[1] + (box.height / 2));
-      const width = (this.player.width + box.width) / 2;
-      const height = (this.player.height + box.height) / 2;
-      const crossWidth = width * yDistance;
-      const crossHeight = height * xDistance;
-
-      if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
-        if (crossWidth > crossHeight) {
+      switch (Util.checkCollision(this.player, box)) {
+        case 'side':
           side = true;
-        }
-        top = true;
+          break;
+        case 'top':
+          top = true;
+          break;
+        default:
+          break;
       }
     }
-
     if (side) return 'side';
     if (top) return 'top';
     return 'none';
   }
-
 }
 
 Game.ROWS = 10;
