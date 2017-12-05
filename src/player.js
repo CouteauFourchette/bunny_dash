@@ -3,14 +3,14 @@ class Player {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = 0.1;
+    this.speed = 0.5;
     this.jump = false;
   }
 
   move() {
     if (this.jump) {
       if (this.pos[1] > 200) {
-        this.speed -= this.speed;
+        this.speed = -0.5;
       } else {
         this.jump = false;
       }

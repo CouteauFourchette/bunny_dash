@@ -1,5 +1,5 @@
 class Block {
-  constructor(width, height, initialPos, speed = 0.1) {
+  constructor(width, height, initialPos, speed = 1) {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
