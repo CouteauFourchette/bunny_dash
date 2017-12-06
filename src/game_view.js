@@ -2,6 +2,7 @@ class GameView {
   constructor(game, ctx) {
     this.ctx = ctx;
     this.game = game;
+    this.score = 0;
   }
 
   start() {
@@ -13,6 +14,10 @@ class GameView {
     const timeDelta = time - this.lastTime;
     this.game.step(timeDelta);
     this.game.draw(this.ctx);
+    this.score += 0.1;
+    this.ctx.fillStyle = 'white';
+    this.ctx.font = '20px Arial';
+    this.ctx.fillText(`Score: ${Math.round(this.score)}`, (this.game.width - 150), 80);
     this.lastTime = time;
     if (this.game.over) {
       this.gameOver();
@@ -27,7 +32,9 @@ class GameView {
     this.ctx.fillRect(0, 0, this.game.width, this.game.height);
     this.ctx.fillStyle = 'white';
     this.ctx.font = '80px Arial';
-    this.ctx.fillText('Game Over', (this.game.width / 3), 80);
+    this.ctx.textAlign = 'center'; 
+    this.ctx.fillText('Game Over', this.game.width / 2, (this.game.height / 2) - 50);
+    this.ctx.fillText(`Score: ${Math.round(this.score)}`, this.game.width / 2, (this.game.height / 2) + 50);
   }
 }
 
