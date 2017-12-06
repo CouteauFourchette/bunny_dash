@@ -104,6 +104,7 @@ class Game {
     for (let i = 0; i < this.springs.length; i += 1) {
       const spring = this.springs[i];
       if (Util.checkCollision(this.player, spring) === 'top') {
+        spring.on = true;
         return 'top';
       }
     }

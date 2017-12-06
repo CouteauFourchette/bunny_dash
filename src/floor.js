@@ -3,11 +3,15 @@ class Floor {
     this.width = width;
     this.height = height;
     this.pos = [0, this.height * 4];
+    this.image = new Image();
+    this.image.src = 'images/floor2.png';
+    this.x = 0;
   }
 
   draw(ctx) {
-    ctx.fillStyle = '#ccc';
-    ctx.fillRect(this.pos[0], this.pos[1], this.width, this.height);
+    this.x += this.width / 150;
+    if (this.x > 740) this.x = 0;
+    ctx.drawImage(this.image, this.x, 0, this.width, this.height, this.pos[0], this.pos[1], this.width, this.height);
   }
 }
 

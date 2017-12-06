@@ -2,8 +2,9 @@ import MovingObject from './moving_object';
 
 class Spike extends MovingObject {
   draw(ctx) {
-    ctx.fillStyle = '#228f13';
-    ctx.fillRect(this.pos[0], this.pos[1], this.width, this.height);
+    const image = new Image();
+    image.src = 'images/spikes/spikes_top.png';
+    ctx.drawImage(image, this.pos[0], this.pos[1] - (0.5 * this.height), this.width * 1.5, this.height * 1.5);
   }
 }
 
