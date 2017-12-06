@@ -4,7 +4,7 @@ import Game from './game';
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('canvas');
   const width = window.innerWidth;
-  const padding = 50;
+  const padding = 0;
   // const height = 500;
   // const width = 900;
   canvas.width = width - padding;

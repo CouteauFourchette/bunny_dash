@@ -32,7 +32,7 @@ class GameView {
     this.ctx.fillRect(0, 0, this.game.width, this.game.height);
     this.ctx.fillStyle = 'white';
     this.ctx.font = '80px Arial';
-    this.ctx.textAlign = 'center'; 
+    this.ctx.textAlign = 'center';
     this.ctx.fillText('Game Over', this.game.width / 2, (this.game.height / 2) - 50);
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, this.game.width / 2, (this.game.height / 2) + 50);
   }

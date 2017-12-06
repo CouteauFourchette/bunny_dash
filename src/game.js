@@ -100,6 +100,7 @@ class Game {
     switch (this.checkFloorCollisions()) {
       case 'top':
         this.player.speed = 0;
+        this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
         break;
       case 'side':
         this.over = true;
