@@ -64,10 +64,34 @@ class Game {
   }
 
   move(delta) {
-    this.movingObjects().forEach((object) => {
+    const objects = this.movingObjects();
+    objects.forEach((object) => {
       object.move(delta);
+      if (object.pos[0] < -this.boxSize) {
+        this.remove(object);
+      }
     });
     this.player.move(delta);
+  }
+
+  remove(object) {
+    const spikeIndex = this.spikes.indexOf(object);
+    if (spikeIndex > -1) {
+      const index = spikeIndex;
+      this.spikes.splice(index, 1);
+      return;
+    }
+    const boxIndex = this.boxes.indexOf(object);
+    if (boxIndex > -1) {
+      const index = boxIndex;
+      this.boxes.splice(index, 1);
+      return;
+    }
+    const springIndex = this.springs.indexOf(object);
+    if (springIndex > -1) {
+      const index = springIndex;
+      this.springs.splice(index, 1);
+    }
   }
 
   checkCollisions() {
