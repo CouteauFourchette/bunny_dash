@@ -5,7 +5,7 @@ class Spring extends MovingObject {
     super(...args);
     this.on = false;
     this.image = new Image();
-    this.springImages = ['images/spring/spring_in.png', 'images/spring/spring_out.png'];
+    this.springImages = ['dist/images/spring/spring_in.png', 'dist/images/spring/spring_out.png'];
   }
   draw(ctx) {
     if (this.on) {

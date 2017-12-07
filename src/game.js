@@ -97,7 +97,7 @@ class Game {
   }
 
   checkCollisions() {
-    switch (this.checkFloorCollisions()) {
+    switch (this.checkBoxCollisions()) {
       case 'top':
         this.player.speed = 0;
         this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
@@ -108,6 +108,10 @@ class Game {
       default:
         this.player.speed = (this.boxSize / 7);
         break;
+    }
+    if (this.checkFloorCollision()) {
+      this.player.speed = 0;
+      this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
     }
     if (this.checkSpikeCollisions() !== 'none') {
       this.over = true;
@@ -120,6 +124,7 @@ class Game {
   checkSpikeCollisions() {
     for (let i = 0; i < this.spikes.length; i += 1) {
       const spike = this.spikes[i];
+      if (spike.pos[0] > this.player.pos[0] + this.boxSize) return 'none';
       if (Util.checkCollision(this.player, spike) !== 'none') {
         return 'collision';
       }
@@ -138,18 +143,25 @@ class Game {
     return 'none';
   }
 
-  checkFloorCollisions() {
+  checkFloorCollision() {
+    if (Util.checkCollision(this.player, this.floor) === 'top') {
+      return true;
+    }
+    return false;
+  }
+
+  checkBoxCollisions() {
     let side = false;
     let top = false;
-    const boxesAndFloor = this.boxes.concat([this.floor]);
-    for (let i = 0; i < boxesAndFloor.length; i += 1) {
-      const box = boxesAndFloor[i];
+    for (let i = 0; i < this.boxes.length; i += 1) {
+      const box = this.boxes[i];
+      // if (box.pos[0] > this.player.pos[0] + (this.boxSize * 1.5)) return 'none';
       switch (Util.checkCollision(this.player, box)) {
         case 'side':
-          side = true;
+          return 'side'
           break;
         case 'top':
-          top = true;
+          return 'top';
           break;
         default:
           break;

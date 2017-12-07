@@ -9,7 +9,7 @@ class Player {
     this.tickCount = 0;
     this.frameIndex = 0;
     this.imageFrames = [];
-    const imageSources = ['images/bunny/bunny1_walk1.png', 'images/bunny/bunny1_walk2.png', 'images/bunny/bunny1_jump.png'];
+    const imageSources = ['dist/images/bunny/bunny1_walk1.png', 'dist/images/bunny/bunny1_walk2.png', 'dist/images/bunny/bunny1_jump.png'];
     for (let i = 0; i < 3; i += 1) {
       const image = new Image();
       image.src = imageSources[i];
