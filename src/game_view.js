@@ -1,12 +1,16 @@
+import Game from './game';
+
 class GameView {
-  constructor(game, ctx) {
+  constructor(ctx, canvas) {
     this.ctx = ctx;
-    this.game = game;
-    this.score = 0;
+    this.canvas = canvas;
+    this.game = new Game(canvas.width, (canvas.width / 2));
   }
 
   start() {
+    this.game = new Game(this.canvas.width, (this.canvas.width / 2));
     this.lastTime = 0;
+    this.score = 0;
     requestAnimationFrame(this.animate.bind(this));
   }
 
@@ -26,25 +30,53 @@ class GameView {
     requestAnimationFrame(this.animate.bind(this));
   }
 
-
-  bindKeys(canvas) {
-    canvas.addEventListener('mousedown', () => this.game.jump = true, false);
-    canvas.addEventListener('mouseup', () => this.game.jump = false, false);
-    document.addEventListener('keydown', (e) => { if (e.keyCode === 32) this.game.jump = true; });
-    document.addEventListener('keyup', (e) => { if (e.keyCode === 32) this.game.jump = false; });
-    window.addEventListener('touchstart', () => this.game.jump = true);
-    window.addEventListener('touchend', () => this.game.jump = false);
+  handleMouseClick(jump) {
+    if (this.game.over) {
+      this.start();
+    } else {
+      this.game.jump = jump;
+    }
   }
+
+  handleKeyPress(e, jump) {
+    if (e.keyCode === 32) {
+      if (this.game.over) {
+        this.start();
+      } else {
+        this.game.jump = jump;
+      }
+    }
+  }
+
+  bindKeys() {
+    this.canvas.addEventListener('mousedown', () => this.handleMouseClick(true));
+    this.canvas.addEventListener('mouseup', () => this.handleMouseClick(false));
+    document.addEventListener('keydown', e => this.handleKeyPress(e, true));
+    document.addEventListener('keyup', e => this.handleKeyPress(e, false));
+    window.addEventListener('touchstart', () => this.handleMouseClick(true));
+    window.addEventListener('touchend', () => this.handleMouseClick(false));
+  }
+
+  // unbindKeys() {
+  //   this.canvas.removeEventListener('mousedown', this.handleMouseClick);
+  //   this.canvas.removeEventListener('mouseup', this.handleMouseClick);
+  //   document.removeEventListener('keydown', this.handleKeyPress);
+  //   document.removeEventListener('keyup', this.handleKeyPress);
+  //   window.removeEventListener('touchstart', this.handleMouseClick);
+  //   window.removeEventListener('touchend', this.handleMouseClick);
+  // }
 
   gameOver() {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);
-    this.ctx.fillStyle = '#5DBCD2';
+    this.ctx.fillStyle = 'transparent';
     this.ctx.fillRect(0, 0, this.game.width, this.game.height);
     this.ctx.fillStyle = 'white';
     this.ctx.font = '80px Arial';
     this.ctx.textAlign = 'center';
     this.ctx.fillText('Game Over', this.game.width / 2, (this.game.height / 2) - 50);
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, this.game.width / 2, (this.game.height / 2) + 50);
+    this.ctx.font = '50px Arial';
+    this.ctx.fillText(`Press Space or Click to start`, this.game.width / 2, (this.game.height / 2) + 150);
   }
 }
 

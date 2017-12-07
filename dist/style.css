@@ -1,7 +1,8 @@
 body {
   padding: 0;
   margin: 0;
-  background-color: rgb(202, 149, 94);
+  background: #ccc;
+  height: 100%;
 }
 h1 {
   color: white;
@@ -13,4 +14,5 @@ h1 {
 #canvas {
   display: block;
   margin: 0;
+  background: #1ECDCE linear-gradient(to top left, #48A7D1 0%, #1ECDCE 100%);
 }

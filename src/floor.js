@@ -15,7 +15,7 @@ class Floor {
   }
 
   draw(ctx) {
-    if (this.x > 745) this.x = 0;
+    if (this.x > 735) this.x = 0;
     ctx.drawImage(this.image, this.x, 0, this.width, this.height, this.pos[0], this.pos[1], this.width, (this.height * 2));
   }
 }

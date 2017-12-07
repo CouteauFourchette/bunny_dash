@@ -24,7 +24,7 @@ class Game {
 
   draw(ctx) {
     ctx.clearRect(0, 0, this.width, this.height);
-    ctx.fillStyle = Game.BG_COLOR;
+    ctx.fillStyle = 'transparent';
     ctx.fillRect(0, 0, this.width, this.height);
     
     this.floor.draw(ctx);
@@ -155,7 +155,6 @@ class Game {
   checkBoxCollisions() {
     for (let i = 0; i < this.boxes.length; i += 1) {
       const box = this.boxes[i];
-
       switch (Util.checkCollision(this.player, box)) {
         case 'side':
           return 'side';
