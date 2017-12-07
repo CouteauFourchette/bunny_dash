@@ -153,17 +153,23 @@ class Game {
   }
 
   checkBoxCollisions() {
+    let side = false;
+    let top = false;
     for (let i = 0; i < this.boxes.length; i += 1) {
       const box = this.boxes[i];
       switch (Util.checkCollision(this.player, box)) {
         case 'side':
-          return 'side';
+          side = true;
+          break;
         case 'top':
-          return 'top';
+          top = true;
+          break;
         default:
           break;
       }
     }
+    if (side) return 'side';
+    if (top) return 'top';
     return 'none';
   }
 }

@@ -1,15 +1,28 @@
 body {
   padding: 0;
   margin: 0;
-  background: #ccc;
+  background-color: white;
   height: 100%;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.presentation {
+  color: black;
+  height: 800px;
+  font-family: 'Atma', cursive;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0px 30px;
 }
 h1 {
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
   font-size: 50px;
   text-align: center;
-  font-weight: 200;
+}
+
+.collision-images {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 30px;
 }
 #canvas {
   display: block;
