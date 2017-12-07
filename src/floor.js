@@ -8,11 +8,18 @@ class Floor {
     this.x = 0;
   }
 
+  move(delta) {
+    const velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
+    const offsetX = (this.width / 150) * velocityScale;
+    this.x += offsetX;
+  }
+
   draw(ctx) {
-    this.x += this.width / 150;
     if (this.x > 745) this.x = 0;
     ctx.drawImage(this.image, this.x, 0, this.width, this.height, this.pos[0], this.pos[1], this.width, (this.height * 2));
   }
 }
+
+const NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 export default Floor;

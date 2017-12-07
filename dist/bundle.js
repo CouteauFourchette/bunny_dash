@@ -388,6 +388,12 @@ var GameView = function () {
       document.addEventListener('keyup', function (e) {
         if (e.keyCode === 32) _this.game.jump = false;
       });
+      window.addEventListener('touchstart', function () {
+        return _this.game.jump = true;
+      });
+      window.addEventListener('touchend', function () {
+        return _this.game.jump = false;
+      });
     }
   }, {
     key: 'gameOver',
@@ -535,6 +541,7 @@ var Game = function () {
           _this2.remove(object);
         }
       });
+      this.floor.move(delta);
       this.player.move(delta);
     }
   }, {
@@ -619,7 +626,6 @@ var Game = function () {
   }, {
     key: 'checkBoxCollisions',
     value: function checkBoxCollisions() {
-
       for (var i = 0; i < this.boxes.length; i += 1) {
         var box = this.boxes[i];
 
@@ -673,9 +679,15 @@ var Floor = function () {
   }
 
   _createClass(Floor, [{
+    key: 'move',
+    value: function move(delta) {
+      var velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
+      var offsetX = this.width / 150 * velocityScale;
+      this.x += offsetX;
+    }
+  }, {
     key: 'draw',
     value: function draw(ctx) {
-      this.x += this.width / 150;
       if (this.x > 745) this.x = 0;
       ctx.drawImage(this.image, this.x, 0, this.width, this.height, this.pos[0], this.pos[1], this.width, this.height * 2);
     }
@@ -683,6 +695,8 @@ var Floor = function () {
 
   return Floor;
 }();
+
+var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 exports.default = Floor;
 

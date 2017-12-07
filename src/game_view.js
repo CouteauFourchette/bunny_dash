@@ -32,6 +32,8 @@ class GameView {
     canvas.addEventListener('mouseup', () => this.game.jump = false, false);
     document.addEventListener('keydown', (e) => { if (e.keyCode === 32) this.game.jump = true; });
     document.addEventListener('keyup', (e) => { if (e.keyCode === 32) this.game.jump = false; });
+    window.addEventListener('touchstart', () => this.game.jump = true);
+    window.addEventListener('touchend', () => this.game.jump = false);
   }
 
   gameOver() {

@@ -74,6 +74,7 @@ class Game {
         this.remove(object);
       }
     });
+    this.floor.move(delta);
     this.player.move(delta);
   }
 
@@ -152,7 +153,6 @@ class Game {
   }
 
   checkBoxCollisions() {
-
     for (let i = 0; i < this.boxes.length; i += 1) {
       const box = this.boxes[i];
 
