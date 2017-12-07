@@ -26,6 +26,14 @@ class GameView {
     requestAnimationFrame(this.animate.bind(this));
   }
 
+
+  bindKeys(canvas) {
+    canvas.addEventListener('mousedown', () => this.game.jump = true, false);
+    canvas.addEventListener('mouseup', () => this.game.jump = false, false);
+    document.addEventListener('keydown', (e) => { if (e.keyCode === 32) this.game.jump = true; });
+    document.addEventListener('keyup', (e) => { if (e.keyCode === 32) this.game.jump = false; });
+  }
+
   gameOver() {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);
     this.ctx.fillStyle = '#5DBCD2';

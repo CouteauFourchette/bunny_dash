@@ -11,5 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.height = (width / 2) - padding;
   const ctx = canvas.getContext('2d');
   const game = new Game(width - padding, (width / 2) - padding);
-  new GameView(game, ctx).start();
+  const gameView = new GameView(game, ctx);
+  gameView.bindKeys(canvas);
+  gameView.start();
 });
+

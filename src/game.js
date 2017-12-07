@@ -19,6 +19,7 @@ class Game {
     this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
     this.floor = new Floor(this.width, this.floorSize);
     this.over = false;
+    this.jump = false;
   }
 
   draw(ctx) {
@@ -60,7 +61,7 @@ class Game {
 
   step(delta) {
     this.checkCollisions();
-    if (key.isPressed('space')) this.player.jump(this.height * 0.20);
+    if (this.jump) this.player.jump(this.height * 0.20);
     this.move(delta);
     this.spawn();
   }
@@ -151,24 +152,19 @@ class Game {
   }
 
   checkBoxCollisions() {
-    let side = false;
-    let top = false;
+
     for (let i = 0; i < this.boxes.length; i += 1) {
       const box = this.boxes[i];
-      // if (box.pos[0] > this.player.pos[0] + (this.boxSize * 1.5)) return 'none';
+
       switch (Util.checkCollision(this.player, box)) {
         case 'side':
-          return 'side'
-          break;
+          return 'side';
         case 'top':
           return 'top';
-          break;
         default:
           break;
       }
     }
-    if (side) return 'side';
-    if (top) return 'top';
     return 'none';
   }
 }
