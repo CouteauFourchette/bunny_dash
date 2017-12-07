@@ -79,8 +79,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById('canvas');
   var width = window.innerWidth;
-  // const height = 500;
-  // const width = 900;
   canvas.width = width;
   canvas.height = width / 2;
   var ctx = canvas.getContext('2d');
@@ -88,6 +86,12 @@ document.addEventListener('DOMContentLoaded', function () {
   gameView.bindKeys(canvas);
   gameView.start();
 });
+
+window.onkeydown = function (event) {
+  if (event.keyCode === 32) {
+    event.preventDefault();
+  }
+};
 
 /***/ }),
 /* 1 */
