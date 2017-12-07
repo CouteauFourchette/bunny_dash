@@ -137,6 +137,7 @@ class Game {
   checkSpringCollisions() {
     for (let i = 0; i < this.springs.length; i += 1) {
       const spring = this.springs[i];
+      if (spring.pos[0] > this.player.pos[0] + this.boxSize) return 'none';
       if (Util.checkCollision(this.player, spring) === 'top') {
         spring.on = true;
         return 'top';

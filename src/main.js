@@ -2,7 +2,7 @@ import GameView from './game_view';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('canvas');
-  const width = window.innerWidth;
+  const width = 1680;
   canvas.width = width;
   canvas.height = (width / 2);
   const ctx = canvas.getContext('2d');
@@ -16,5 +16,3 @@ window.onkeydown = (event) => {
     event.preventDefault();
   }
 };
-
-

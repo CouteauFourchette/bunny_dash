@@ -6,7 +6,7 @@ export function checkCollision(objectA, objectB) {
   const height = (objectA.height + objectB.height) / 2;
 
   if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
-    if (((Math.abs(xDistance) / width) * 0.93) > (Math.abs(yDistance) / height)) {
+    if (((Math.abs(xDistance) / width) * 0.80) > (Math.abs(yDistance) / height)) {
       return 'side';
     }
     return 'top';
