@@ -6,14 +6,13 @@ class GameView {
     this.ctx = ctx;
     this.canvas = canvas;
     this.game = new Game(canvas.width, (canvas.width / 2));
-    this.bot = new Bot(this.game);
+    
   }
 
   start() {
     this.game = new Game(this.canvas.width, (this.canvas.width / 2));
     this.lastTime = 0;
     this.score = 0;
-    this.bot = new Bot(this.game);
     requestAnimationFrame(this.animate.bind(this));
   }
 
@@ -26,7 +25,6 @@ class GameView {
     this.ctx.font = '20px Arial';
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, (this.game.width - 150), 80);
     this.lastTime = time;
-    this.bot.getAction(timeDelta);
     if (this.game.over) {
       this.gameOver();
       return;

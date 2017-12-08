@@ -5,6 +5,7 @@ import Spike from './moving_objects/spike';
 import Block from './moving_objects/block';
 import LevelGenerator from './level_generator';
 import * as Util from './util';
+import Bot from './bot';
 
 class Game {
   constructor(width, height) {
@@ -20,6 +21,7 @@ class Game {
     this.floor = new Floor(this.width, this.floorSize);
     this.over = false;
     this.jump = false;
+    this.bot = new Bot(this);
   }
 
   draw(ctx) {
@@ -62,6 +64,7 @@ class Game {
   step(delta) {
     this.checkCollisions();
     if (this.jump) this.player.jump(this.height * 0.20);
+    this.bot.getAction(delta);
     this.move(delta);
     this.spawn();
   }
