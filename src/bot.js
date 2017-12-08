@@ -11,7 +11,8 @@ class Bot {
     return this.game.movingObjects().filter(object => (object.pos[0] < (this.game.player.pos[0] + (3 * this.game.boxSize)) && (object.pos[0] > this.game.player.pos[0])));
   }
 
-  getAction(timeDelta) {
+  getAction() {
+    const timeDelta = 1000 / 60;
     const simulate = cloneDeep(this.game);
     if (this.game.player.speed === 0) {
       if (this.closeObjects().length > 0) {

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -406,7 +406,83 @@ function checkCollision(objectA, objectB) {
 "use strict";
 
 
-var _game_view = __webpack_require__(7);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = __webpack_require__(13);
+
+var _util = __webpack_require__(5);
+
+var Util = _interopRequireWildcard(_util);
+
+var _player = __webpack_require__(1);
+
+var _player2 = _interopRequireDefault(_player);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Bot = function () {
+  function Bot(game) {
+    _classCallCheck(this, Bot);
+
+    this.game = game;
+  }
+
+  _createClass(Bot, [{
+    key: 'closeObjects',
+    value: function closeObjects() {
+      var _this = this;
+
+      return this.game.movingObjects().filter(function (object) {
+        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
+      });
+    }
+  }, {
+    key: 'getAction',
+    value: function getAction() {
+      var timeDelta = 1000 / 60;
+      var simulate = (0, _lodash.cloneDeep)(this.game);
+      if (this.game.player.speed === 0) {
+        if (this.closeObjects().length > 0) {
+          simulate.player.jump(this.game.height * 0.20);
+          simulate.move(timeDelta);
+          while (simulate.player.speed !== 0 && !simulate.over) {
+            simulate.checkCollisions();
+            simulate.move(timeDelta);
+          }
+          simulate.checkCollisions();
+          if (simulate.over) {
+            this.game.jump = false;
+          } else {
+            this.game.jump = true;
+          }
+        }
+      } else {
+        this.game.jump = false;
+      }
+    }
+  }]);
+
+  return Bot;
+}();
+
+exports.default = Bot;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _game_view = __webpack_require__(8);
 
 var _game_view2 = _interopRequireDefault(_game_view);
 
@@ -444,7 +520,7 @@ window.onkeydown = function (event) {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -456,7 +532,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = __webpack_require__(8);
+var _game = __webpack_require__(9);
 
 var _game2 = _interopRequireDefault(_game);
 
@@ -568,7 +644,7 @@ var GameView = function () {
 exports.default = GameView;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -580,7 +656,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _floor = __webpack_require__(9);
+var _floor = __webpack_require__(10);
 
 var _floor2 = _interopRequireDefault(_floor);
 
@@ -600,7 +676,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_generator = __webpack_require__(10);
+var _level_generator = __webpack_require__(11);
 
 var _level_generator2 = _interopRequireDefault(_level_generator);
 
@@ -608,7 +684,7 @@ var _util = __webpack_require__(5);
 
 var Util = _interopRequireWildcard(_util);
 
-var _bot = __webpack_require__(12);
+var _bot = __webpack_require__(6);
 
 var _bot2 = _interopRequireDefault(_bot);
 
@@ -821,7 +897,7 @@ Game.BG_COLOR = '#5DBCD2';
 exports.default = Game;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -870,7 +946,7 @@ var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 exports.default = Floor;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -894,7 +970,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_clusters = __webpack_require__(11);
+var _level_clusters = __webpack_require__(12);
 
 var _level_clusters2 = _interopRequireDefault(_level_clusters);
 
@@ -962,7 +1038,7 @@ var LevelGenerator = function () {
 exports.default = LevelGenerator;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1057,81 +1133,6 @@ function springOverSpikes() {
 var Clusters = [springAndJump, springTrap, jumpAndJump, easySpikeJump, alternateJump, springOverSpikes];
 
 exports.default = Clusters;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = __webpack_require__(13);
-
-var _util = __webpack_require__(5);
-
-var Util = _interopRequireWildcard(_util);
-
-var _player = __webpack_require__(1);
-
-var _player2 = _interopRequireDefault(_player);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Bot = function () {
-  function Bot(game) {
-    _classCallCheck(this, Bot);
-
-    this.game = game;
-  }
-
-  _createClass(Bot, [{
-    key: 'closeObjects',
-    value: function closeObjects() {
-      var _this = this;
-
-      return this.game.movingObjects().filter(function (object) {
-        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
-      });
-    }
-  }, {
-    key: 'getAction',
-    value: function getAction(timeDelta) {
-      var simulate = (0, _lodash.cloneDeep)(this.game);
-      if (this.game.player.speed === 0) {
-        if (this.closeObjects().length > 0) {
-          simulate.player.jump(this.game.height * 0.20);
-          simulate.move(timeDelta);
-          while (simulate.player.speed !== 0 && !simulate.over) {
-            simulate.checkCollisions();
-            simulate.move(timeDelta);
-          }
-          simulate.checkCollisions();
-          if (simulate.over) {
-            this.game.jump = false;
-          } else {
-            this.game.jump = true;
-          }
-        }
-      } else {
-        this.game.jump = false;
-      }
-    }
-  }]);
-
-  return Bot;
-}();
-
-exports.default = Bot;
 
 /***/ }),
 /* 13 */
