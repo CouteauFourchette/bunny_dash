@@ -9,6 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameView = new GameView(ctx, canvas);
   gameView.bindKeys(canvas);
   gameView.start();
+
+  const humanButton = document.getElementById('human');
+  humanButton.addEventListener('click', () => {
+    gameView.bot = false;
+    gameView.game.over = true;
+    gameView.gameOver();
+  });
+
+  const aiButton = document.getElementById('ai');
+  aiButton.addEventListener('click', () => {
+    gameView.bot = true;
+    gameView.game.over = true;
+    gameView.gameOver();
+  });
 });
 
 window.onkeydown = (event) => {

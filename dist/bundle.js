@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -406,82 +406,7 @@ function checkCollision(objectA, objectB) {
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = __webpack_require__(13);
-
-var _util = __webpack_require__(5);
-
-var Util = _interopRequireWildcard(_util);
-
-var _player = __webpack_require__(1);
-
-var _player2 = _interopRequireDefault(_player);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Bot = function () {
-  function Bot(game) {
-    _classCallCheck(this, Bot);
-
-    this.game = game;
-  }
-
-  _createClass(Bot, [{
-    key: 'closeObjects',
-    value: function closeObjects() {
-      var _this = this;
-
-      return this.game.movingObjects().filter(function (object) {
-        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
-      });
-    }
-  }, {
-    key: 'getAction',
-    value: function getAction(timeDelta) {
-      var simulate = (0, _lodash.cloneDeep)(this.game);
-      if (this.game.player.speed === 0) {
-        if (this.closeObjects().length > 0) {
-          simulate.player.jump(this.game.height * 0.20);
-          simulate.move(timeDelta);
-          while (simulate.player.speed !== 0 && !simulate.over) {
-            simulate.checkCollisions();
-            simulate.move(timeDelta);
-          }
-          simulate.checkCollisions();
-          if (simulate.over) {
-            this.game.jump = false;
-          } else {
-            this.game.jump = true;
-          }
-        }
-      } else {
-        this.game.jump = false;
-      }
-    }
-  }]);
-
-  return Bot;
-}();
-
-exports.default = Bot;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _game_view = __webpack_require__(8);
+var _game_view = __webpack_require__(7);
 
 var _game_view2 = _interopRequireDefault(_game_view);
 
@@ -496,6 +421,20 @@ document.addEventListener('DOMContentLoaded', function () {
   var gameView = new _game_view2.default(ctx, canvas);
   gameView.bindKeys(canvas);
   gameView.start();
+
+  var humanButton = document.getElementById('human');
+  humanButton.addEventListener('click', function () {
+    gameView.bot = false;
+    gameView.game.over = true;
+    gameView.gameOver();
+  });
+
+  var aiButton = document.getElementById('ai');
+  aiButton.addEventListener('click', function () {
+    gameView.bot = true;
+    gameView.game.over = true;
+    gameView.gameOver();
+  });
 });
 
 window.onkeydown = function (event) {
@@ -505,7 +444,7 @@ window.onkeydown = function (event) {
 };
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -517,13 +456,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = __webpack_require__(9);
+var _game = __webpack_require__(8);
 
 var _game2 = _interopRequireDefault(_game);
-
-var _bot = __webpack_require__(6);
-
-var _bot2 = _interopRequireDefault(_bot);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -541,7 +476,8 @@ var GameView = function () {
   _createClass(GameView, [{
     key: 'start',
     value: function start() {
-      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2);
+      this.game = undefined;
+      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2, this.bot);
       this.lastTime = 0;
       this.score = 0;
       requestAnimationFrame(this.animate.bind(this));
@@ -550,17 +486,18 @@ var GameView = function () {
     key: 'animate',
     value: function animate(time) {
       var timeDelta = time - this.lastTime;
-      this.game.step(timeDelta);
-      this.game.draw(this.ctx);
-      this.score += 0.1;
-      this.ctx.fillStyle = 'white';
-      this.ctx.font = '20px Arial';
-      this.ctx.fillText('Score: ' + Math.round(this.score), this.game.width - 150, 80);
-      this.lastTime = time;
       if (this.game.over) {
         this.gameOver();
         return;
       }
+      this.game.step(timeDelta);
+      this.game.draw(this.ctx);
+      this.score += 0.1;
+      this.ctx.fillStyle = 'white';
+      this.ctx.font = '40px Arial';
+      this.ctx.fillText('Score: ' + Math.round(this.score), this.game.width - 250, 80);
+      if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
+      this.lastTime = time;
       requestAnimationFrame(this.animate.bind(this));
     }
   }, {
@@ -607,16 +544,6 @@ var GameView = function () {
         return _this.handleMouseClick(false);
       });
     }
-
-    // unbindKeys() {
-    //   this.canvas.removeEventListener('mousedown', this.handleMouseClick);
-    //   this.canvas.removeEventListener('mouseup', this.handleMouseClick);
-    //   document.removeEventListener('keydown', this.handleKeyPress);
-    //   document.removeEventListener('keyup', this.handleKeyPress);
-    //   window.removeEventListener('touchstart', this.handleMouseClick);
-    //   window.removeEventListener('touchend', this.handleMouseClick);
-    // }
-
   }, {
     key: 'gameOver',
     value: function gameOver() {
@@ -630,6 +557,8 @@ var GameView = function () {
       this.ctx.fillText('Score: ' + Math.round(this.score), this.game.width / 2, this.game.height / 2 + 50);
       this.ctx.font = '50px Arial';
       this.ctx.fillText('Press Space or Click to start', this.game.width / 2, this.game.height / 2 + 150);
+      this.ctx.font = '40px Arial';
+      if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
     }
   }]);
 
@@ -639,7 +568,7 @@ var GameView = function () {
 exports.default = GameView;
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -651,7 +580,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _floor = __webpack_require__(10);
+var _floor = __webpack_require__(9);
 
 var _floor2 = _interopRequireDefault(_floor);
 
@@ -671,7 +600,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_generator = __webpack_require__(11);
+var _level_generator = __webpack_require__(10);
 
 var _level_generator2 = _interopRequireDefault(_level_generator);
 
@@ -679,7 +608,7 @@ var _util = __webpack_require__(5);
 
 var Util = _interopRequireWildcard(_util);
 
-var _bot = __webpack_require__(6);
+var _bot = __webpack_require__(12);
 
 var _bot2 = _interopRequireDefault(_bot);
 
@@ -690,9 +619,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Game = function () {
-  function Game(width, height) {
-    var bot = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
+  function Game(width, height, bot) {
     _classCallCheck(this, Game);
 
     this.width = width;
@@ -894,7 +821,7 @@ Game.BG_COLOR = '#5DBCD2';
 exports.default = Game;
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -943,7 +870,7 @@ var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 exports.default = Floor;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -967,7 +894,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_clusters = __webpack_require__(12);
+var _level_clusters = __webpack_require__(11);
 
 var _level_clusters2 = _interopRequireDefault(_level_clusters);
 
@@ -1035,7 +962,7 @@ var LevelGenerator = function () {
 exports.default = LevelGenerator;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1130,6 +1057,81 @@ function springOverSpikes() {
 var Clusters = [springAndJump, springTrap, jumpAndJump, easySpikeJump, alternateJump, springOverSpikes];
 
 exports.default = Clusters;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = __webpack_require__(13);
+
+var _util = __webpack_require__(5);
+
+var Util = _interopRequireWildcard(_util);
+
+var _player = __webpack_require__(1);
+
+var _player2 = _interopRequireDefault(_player);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Bot = function () {
+  function Bot(game) {
+    _classCallCheck(this, Bot);
+
+    this.game = game;
+  }
+
+  _createClass(Bot, [{
+    key: 'closeObjects',
+    value: function closeObjects() {
+      var _this = this;
+
+      return this.game.movingObjects().filter(function (object) {
+        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
+      });
+    }
+  }, {
+    key: 'getAction',
+    value: function getAction(timeDelta) {
+      var simulate = (0, _lodash.cloneDeep)(this.game);
+      if (this.game.player.speed === 0) {
+        if (this.closeObjects().length > 0) {
+          simulate.player.jump(this.game.height * 0.20);
+          simulate.move(timeDelta);
+          while (simulate.player.speed !== 0 && !simulate.over) {
+            simulate.checkCollisions();
+            simulate.move(timeDelta);
+          }
+          simulate.checkCollisions();
+          if (simulate.over) {
+            this.game.jump = false;
+          } else {
+            this.game.jump = true;
+          }
+        }
+      } else {
+        this.game.jump = false;
+      }
+    }
+  }]);
+
+  return Bot;
+}();
+
+exports.default = Bot;
 
 /***/ }),
 /* 13 */

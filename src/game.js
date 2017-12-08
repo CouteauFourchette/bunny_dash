@@ -8,7 +8,7 @@ import * as Util from './util';
 import Bot from './bot';
 
 class Game {
-  constructor(width, height, bot = false) {
+  constructor(width, height, bot) {
     this.width = width;
     this.height = height;
     this.floorSize = this.height / 5;
@@ -36,7 +36,7 @@ class Game {
     this.movingObjects().forEach((object) => {
       object.draw(ctx);
     });
-
+  
     this.player.draw(ctx);
   }
 

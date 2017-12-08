@@ -1,16 +1,15 @@
 import Game from './game';
-import Bot from './bot';
 
 class GameView {
   constructor(ctx, canvas) {
     this.ctx = ctx;
     this.canvas = canvas;
     this.game = new Game(canvas.width, (canvas.width / 2));
-    
   }
 
   start() {
-    this.game = new Game(this.canvas.width, (this.canvas.width / 2));
+    this.game = undefined;
+    this.game = new Game(this.canvas.width, (this.canvas.width / 2), this.bot);
     this.lastTime = 0;
     this.score = 0;
     requestAnimationFrame(this.animate.bind(this));
@@ -18,17 +17,18 @@ class GameView {
 
   animate(time) {
     const timeDelta = time - this.lastTime;
-    this.game.step(timeDelta);
-    this.game.draw(this.ctx);
-    this.score += 0.1;
-    this.ctx.fillStyle = 'white';
-    this.ctx.font = '20px Arial';
-    this.ctx.fillText(`Score: ${Math.round(this.score)}`, (this.game.width - 150), 80);
-    this.lastTime = time;
     if (this.game.over) {
       this.gameOver();
       return;
     }
+    this.game.step(timeDelta);
+    this.game.draw(this.ctx);
+    this.score += 0.1;
+    this.ctx.fillStyle = 'white';
+    this.ctx.font = '40px Arial';
+    this.ctx.fillText(`Score: ${Math.round(this.score)}`, (this.game.width - 250), 80);
+    if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
+    this.lastTime = time;
     requestAnimationFrame(this.animate.bind(this));
   }
 
@@ -59,15 +59,6 @@ class GameView {
     window.addEventListener('touchend', () => this.handleMouseClick(false));
   }
 
-  // unbindKeys() {
-  //   this.canvas.removeEventListener('mousedown', this.handleMouseClick);
-  //   this.canvas.removeEventListener('mouseup', this.handleMouseClick);
-  //   document.removeEventListener('keydown', this.handleKeyPress);
-  //   document.removeEventListener('keyup', this.handleKeyPress);
-  //   window.removeEventListener('touchstart', this.handleMouseClick);
-  //   window.removeEventListener('touchend', this.handleMouseClick);
-  // }
-
   gameOver() {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);
     this.ctx.fillStyle = 'transparent';
@@ -79,6 +70,8 @@ class GameView {
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, this.game.width / 2, (this.game.height / 2) + 50);
     this.ctx.font = '50px Arial';
     this.ctx.fillText(`Press Space or Click to start`, this.game.width / 2, (this.game.height / 2) + 150);
+    this.ctx.font = '40px Arial';
+    if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
   }
 }
 

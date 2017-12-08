@@ -30,3 +30,19 @@ h1 {
   margin: 0;
   background: #1ECDCE linear-gradient(to top left, #48A7D1 0%, #1ECDCE 100%);
 }
+
+.buttons {
+  display: flex;
+}
+button {
+  width: 50%;
+  height: 50px;
+  background-color: #48A7D1;
+  border: none;
+  border-radius: 0px;
+  font-size: 20px;
+  color: white;
+}
+button:nth-last-of-type(1) {
+  border-left: 1px solid white;
+}
