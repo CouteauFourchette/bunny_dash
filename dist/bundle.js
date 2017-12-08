@@ -691,6 +691,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Game = function () {
   function Game(width, height) {
+    var bot = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
     _classCallCheck(this, Game);
 
     this.width = width;
@@ -705,7 +707,9 @@ var Game = function () {
     this.floor = new _floor2.default(this.width, this.floorSize);
     this.over = false;
     this.jump = false;
-    this.bot = new _bot2.default(this);
+    if (bot) {
+      this.bot = new _bot2.default(this);
+    }
   }
 
   _createClass(Game, [{
@@ -755,7 +759,9 @@ var Game = function () {
     value: function step(delta) {
       this.checkCollisions();
       if (this.jump) this.player.jump(this.height * 0.20);
-      this.bot.getAction(delta);
+      if (this.bot) {
+        this.bot.getAction(delta);
+      }
       this.move(delta);
       this.spawn();
     }
