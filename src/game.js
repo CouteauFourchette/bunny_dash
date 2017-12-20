@@ -65,7 +65,7 @@ class Game {
 
   step(delta) {
     this.checkCollisions();
-    if (this.jump) this.player.jump(this.height * 0.20);
+    if (this.jump) this.player.jump(this.height * 0.27);
     if (this.bot) {
       this.bot.getAction(delta);
     }
@@ -126,7 +126,7 @@ class Game {
       this.over = true;
     }
     if (this.checkSpringCollisions() === 'top') {
-      this.player.jump(this.height * 0.30);
+      this.player.jump(this.height * 0.37);
     }
   }
 

@@ -1,5 +1,4 @@
 import { cloneDeep } from 'lodash';
-import Player from './player';
 
 class Bot {
   constructor(game) {
@@ -15,12 +14,13 @@ class Bot {
     const simulate = cloneDeep(this.game);
     if (this.game.player.speed === 0) {
       if (this.closeObjects().length > 0) {
-        simulate.player.jump(this.game.height * 0.20);
+        simulate.player.jump(this.game.height * 0.27);
         simulate.move(timeDelta);
         while (simulate.player.speed !== 0 && !simulate.over) {
           simulate.checkCollisions();
           simulate.move(timeDelta);
         }
+        simulate.move(timeDelta);
         simulate.checkCollisions();
         if (simulate.over) {
           this.game.jump = false;

@@ -5,7 +5,7 @@ class Player {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = OBJECT_SPEED;
+    this.speed = OBJECT_SPEED * 1.5;
     this.jumpHeight = -1;
     this.ticksPerFrame = 5;
     this.tickCount = 0;
@@ -27,11 +27,11 @@ class Player {
     }
     if (this.jumpHeight !== -1) {
       if (this.pos[1] > this.jumpHeight) {
-        this.speed = -OBJECT_SPEED;
+        this.speed = -OBJECT_SPEED * 1.5;
         this.frameIndex = 2;
       } else {
         this.jumpHeight = -1;
-        this.speed = OBJECT_SPEED;
+        this.speed = OBJECT_SPEED * 1.5;
       }
     }
     const velocityScale = delta / NORMAL_FRAME_TIME_DELTA;

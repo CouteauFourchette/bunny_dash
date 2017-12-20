@@ -137,7 +137,7 @@ var Player = function () {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = _util.OBJECT_SPEED;
+    this.speed = _util.OBJECT_SPEED * 1.5;
     this.jumpHeight = -1;
     this.ticksPerFrame = 5;
     this.tickCount = 0;
@@ -161,11 +161,11 @@ var Player = function () {
       }
       if (this.jumpHeight !== -1) {
         if (this.pos[1] > this.jumpHeight) {
-          this.speed = -_util.OBJECT_SPEED;
+          this.speed = -_util.OBJECT_SPEED * 1.5;
           this.frameIndex = 2;
         } else {
           this.jumpHeight = -1;
-          this.speed = _util.OBJECT_SPEED;
+          this.speed = _util.OBJECT_SPEED * 1.5;
         }
       }
       var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
@@ -659,7 +659,7 @@ var Game = function () {
     key: 'step',
     value: function step(delta) {
       this.checkCollisions();
-      if (this.jump) this.player.jump(this.height * 0.20);
+      if (this.jump) this.player.jump(this.height * 0.27);
       if (this.bot) {
         this.bot.getAction(delta);
       }
@@ -725,7 +725,7 @@ var Game = function () {
         this.over = true;
       }
       if (this.checkSpringCollisions() === 'top') {
-        this.player.jump(this.height * 0.30);
+        this.player.jump(this.height * 0.37);
       }
     }
   }, {
@@ -1076,12 +1076,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _lodash = __webpack_require__(13);
 
-var _player = __webpack_require__(1);
-
-var _player2 = _interopRequireDefault(_player);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Bot = function () {
@@ -1107,12 +1101,13 @@ var Bot = function () {
       var simulate = (0, _lodash.cloneDeep)(this.game);
       if (this.game.player.speed === 0) {
         if (this.closeObjects().length > 0) {
-          simulate.player.jump(this.game.height * 0.20);
+          simulate.player.jump(this.game.height * 0.27);
           simulate.move(timeDelta);
           while (simulate.player.speed !== 0 && !simulate.over) {
             simulate.checkCollisions();
             simulate.move(timeDelta);
           }
+          simulate.move(timeDelta);
           simulate.checkCollisions();
           if (simulate.over) {
             this.game.jump = false;
