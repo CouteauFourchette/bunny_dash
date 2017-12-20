@@ -1,9 +1,11 @@
+import { NORMAL_FRAME_TIME_DELTA, OBJECT_SPEED } from './util';
+
 class Player {
   constructor(width, height, initialPos) {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = (this.height / 6);
+    this.speed = OBJECT_SPEED;
     this.jumpHeight = -1;
     this.ticksPerFrame = 5;
     this.tickCount = 0;
@@ -25,11 +27,11 @@ class Player {
     }
     if (this.jumpHeight !== -1) {
       if (this.pos[1] > this.jumpHeight) {
-        this.speed = -(this.height / 6);
+        this.speed = -OBJECT_SPEED;
         this.frameIndex = 2;
       } else {
         this.jumpHeight = -1;
-        this.speed = (this.height / 6);
+        this.speed = OBJECT_SPEED;
       }
     }
     const velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
@@ -50,7 +52,5 @@ class Player {
     ctx.drawImage(image, this.pos[0], this.pos[1] - (this.height * 0.66), this.width, this.height * 1.66);
   }
 }
-
-const NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 export default Player;

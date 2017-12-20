@@ -38,15 +38,15 @@ class LevelGenerator {
 
     switch (type) {
       case 'spring':
-        return new Spring(boxSize, boxSize, [width + (position * boxSize), height - floorSize], (width / 150));
+        return new Spring(boxSize, boxSize, [width + (position * boxSize), height - floorSize]);
       case 'block_low':
-        return new Block(boxSize, boxSize, [width + (position * boxSize), height - (floorSize + boxSize)], (width / 150));
+        return new Block(boxSize, boxSize, [width + (position * boxSize), height - (floorSize + boxSize)]);
       case 'block_mid':
-        return new Block(boxSize, boxSize, [width + (position * boxSize), height - (floorSize + 2 * boxSize)], (width / 150));
+        return new Block(boxSize, boxSize, [width + (position * boxSize), height - (floorSize + (2 * boxSize))]);
       case 'block_high':
-        return new Block(boxSize, boxSize, [width + (position * boxSize), height - (floorSize + 3 * boxSize)], (width / 150));
+        return new Block(boxSize, boxSize, [width + (position * boxSize), height - (floorSize + (3 * boxSize))]);
       case 'spike':
-        return new Spike(boxSize / 2, boxSize * 0.4, [width + (position * boxSize), height - (floorSize + (boxSize * 0.4))], (width / 150));
+        return new Spike(boxSize / 2, boxSize * 0.4, [width + (position * boxSize), height - (floorSize + (boxSize * 0.4))]);
       default:
         return {};
     }

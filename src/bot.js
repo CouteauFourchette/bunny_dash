@@ -1,5 +1,4 @@
 import { cloneDeep } from 'lodash';
-import * as Util from './util';
 import Player from './player';
 
 class Bot {

@@ -1,3 +1,5 @@
+import { NORMAL_FRAME_TIME_DELTA, OBJECT_SPEED } from './util';
+
 class Floor {
   constructor(width, height) {
     this.width = width;
@@ -10,7 +12,7 @@ class Floor {
 
   move(delta) {
     const velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
-    const offsetX = (this.width / 150) * velocityScale;
+    const offsetX = OBJECT_SPEED * velocityScale;
     this.x += offsetX;
   }
 
@@ -19,7 +21,5 @@ class Floor {
     ctx.drawImage(this.image, this.x, 0, this.width, this.height, this.pos[0], this.pos[1], this.width, (this.height * 2));
   }
 }
-
-const NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 export default Floor;

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -76,22 +76,24 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _util = __webpack_require__(11);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MovingObject = function () {
-  function MovingObject(width, height, initialPos, speed) {
+  function MovingObject(width, height, initialPos) {
     _classCallCheck(this, MovingObject);
 
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = speed;
+    this.speed = _util.OBJECT_SPEED;
   }
 
   _createClass(MovingObject, [{
     key: 'move',
     value: function move(delta) {
-      var velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
+      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
       var offsetX = this.speed * velocityScale;
       this.pos[0] -= offsetX;
     }
@@ -109,8 +111,6 @@ var MovingObject = function () {
   return MovingObject;
 }();
 
-var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
-
 exports.default = MovingObject;
 
 /***/ }),
@@ -126,6 +126,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _util = __webpack_require__(11);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Player = function () {
@@ -135,7 +137,7 @@ var Player = function () {
     this.width = width;
     this.height = height;
     this.pos = initialPos;
-    this.speed = this.height / 6;
+    this.speed = _util.OBJECT_SPEED;
     this.jumpHeight = -1;
     this.ticksPerFrame = 5;
     this.tickCount = 0;
@@ -159,14 +161,14 @@ var Player = function () {
       }
       if (this.jumpHeight !== -1) {
         if (this.pos[1] > this.jumpHeight) {
-          this.speed = -(this.height / 6);
+          this.speed = -_util.OBJECT_SPEED;
           this.frameIndex = 2;
         } else {
           this.jumpHeight = -1;
-          this.speed = this.height / 6;
+          this.speed = _util.OBJECT_SPEED;
         }
       }
-      var velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
+      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
       var offsetY = this.speed * velocityScale;
       this.pos[1] += offsetY;
     }
@@ -189,8 +191,6 @@ var Player = function () {
 
   return Player;
 }();
-
-var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 exports.default = Player;
 
@@ -380,109 +380,7 @@ exports.default = Block;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.checkCollision = checkCollision;
-function checkCollision(objectA, objectB) {
-  var xDistance = objectA.pos[0] + objectA.width / 2 - (objectB.pos[0] + objectB.width / 2);
-  var yDistance = objectA.pos[1] + objectA.height / 2 - (objectB.pos[1] + objectB.height / 2);
-  var width = (objectA.width + objectB.width) / 2;
-  var height = (objectA.height + objectB.height) / 2;
-
-  if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
-    if (Math.abs(xDistance) / width * 0.80 > Math.abs(yDistance) / height) {
-      return 'side';
-    }
-    return 'top';
-  }
-  return 'none';
-}
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = __webpack_require__(13);
-
-var _util = __webpack_require__(5);
-
-var Util = _interopRequireWildcard(_util);
-
-var _player = __webpack_require__(1);
-
-var _player2 = _interopRequireDefault(_player);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Bot = function () {
-  function Bot(game) {
-    _classCallCheck(this, Bot);
-
-    this.game = game;
-  }
-
-  _createClass(Bot, [{
-    key: 'closeObjects',
-    value: function closeObjects() {
-      var _this = this;
-
-      return this.game.movingObjects().filter(function (object) {
-        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
-      });
-    }
-  }, {
-    key: 'getAction',
-    value: function getAction() {
-      var timeDelta = 1000 / 60;
-      var simulate = (0, _lodash.cloneDeep)(this.game);
-      if (this.game.player.speed === 0) {
-        if (this.closeObjects().length > 0) {
-          simulate.player.jump(this.game.height * 0.20);
-          simulate.move(timeDelta);
-          while (simulate.player.speed !== 0 && !simulate.over) {
-            simulate.checkCollisions();
-            simulate.move(timeDelta);
-          }
-          simulate.checkCollisions();
-          if (simulate.over) {
-            this.game.jump = false;
-          } else {
-            this.game.jump = true;
-          }
-        }
-      } else {
-        this.game.jump = false;
-      }
-    }
-  }]);
-
-  return Bot;
-}();
-
-exports.default = Bot;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _game_view = __webpack_require__(8);
+var _game_view = __webpack_require__(6);
 
 var _game_view2 = _interopRequireDefault(_game_view);
 
@@ -520,7 +418,7 @@ window.onkeydown = function (event) {
 };
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -532,7 +430,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = __webpack_require__(9);
+var _game = __webpack_require__(7);
 
 var _game2 = _interopRequireDefault(_game);
 
@@ -644,7 +542,7 @@ var GameView = function () {
 exports.default = GameView;
 
 /***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -656,7 +554,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _floor = __webpack_require__(10);
+var _floor = __webpack_require__(8);
 
 var _floor2 = _interopRequireDefault(_floor);
 
@@ -676,15 +574,15 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_generator = __webpack_require__(11);
+var _level_generator = __webpack_require__(9);
 
 var _level_generator2 = _interopRequireDefault(_level_generator);
 
-var _util = __webpack_require__(5);
+var _util = __webpack_require__(11);
 
 var Util = _interopRequireWildcard(_util);
 
-var _bot = __webpack_require__(6);
+var _bot = __webpack_require__(12);
 
 var _bot2 = _interopRequireDefault(_bot);
 
@@ -897,7 +795,7 @@ Game.BG_COLOR = '#5DBCD2';
 exports.default = Game;
 
 /***/ }),
-/* 10 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -908,6 +806,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -926,8 +826,8 @@ var Floor = function () {
   _createClass(Floor, [{
     key: 'move',
     value: function move(delta) {
-      var velocityScale = delta / NORMAL_FRAME_TIME_DELTA;
-      var offsetX = this.width / 150 * velocityScale;
+      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
+      var offsetX = _util.OBJECT_SPEED * velocityScale;
       this.x += offsetX;
     }
   }, {
@@ -941,12 +841,10 @@ var Floor = function () {
   return Floor;
 }();
 
-var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
-
 exports.default = Floor;
 
 /***/ }),
-/* 11 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -970,7 +868,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_clusters = __webpack_require__(12);
+var _level_clusters = __webpack_require__(10);
 
 var _level_clusters2 = _interopRequireDefault(_level_clusters);
 
@@ -1017,15 +915,15 @@ var LevelGenerator = function () {
 
       switch (type) {
         case 'spring':
-          return new _spring2.default(boxSize, boxSize, [width + position * boxSize, height - floorSize], width / 150);
+          return new _spring2.default(boxSize, boxSize, [width + position * boxSize, height - floorSize]);
         case 'block_low':
-          return new _block2.default(boxSize, boxSize, [width + position * boxSize, height - (floorSize + boxSize)], width / 150);
+          return new _block2.default(boxSize, boxSize, [width + position * boxSize, height - (floorSize + boxSize)]);
         case 'block_mid':
-          return new _block2.default(boxSize, boxSize, [width + position * boxSize, height - (floorSize + 2 * boxSize)], width / 150);
+          return new _block2.default(boxSize, boxSize, [width + position * boxSize, height - (floorSize + 2 * boxSize)]);
         case 'block_high':
-          return new _block2.default(boxSize, boxSize, [width + position * boxSize, height - (floorSize + 3 * boxSize)], width / 150);
+          return new _block2.default(boxSize, boxSize, [width + position * boxSize, height - (floorSize + 3 * boxSize)]);
         case 'spike':
-          return new _spike2.default(boxSize / 2, boxSize * 0.4, [width + position * boxSize, height - (floorSize + boxSize * 0.4)], width / 150);
+          return new _spike2.default(boxSize / 2, boxSize * 0.4, [width + position * boxSize, height - (floorSize + boxSize * 0.4)]);
         default:
           return {};
       }
@@ -1038,7 +936,7 @@ var LevelGenerator = function () {
 exports.default = LevelGenerator;
 
 /***/ }),
-/* 12 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1054,7 +952,7 @@ function springAndJump() {
   var _this = this;
 
   var numberOfJumps = Math.ceil(Math.random() * 6);
-  this.setNextSpawn(numberOfJumps * 50);
+  this.setNextSpawn(numberOfJumps * 100);
   var springs = [this.generateItem('spring', 0)];
   var spikes = [].concat(_toConsumableArray(Array(numberOfJumps * 4).keys())).map(function (pos) {
     return _this.generateItem('spike', pos + 2);
@@ -1068,7 +966,7 @@ function springAndJump() {
 function springTrap() {
   var _this2 = this;
 
-  this.setNextSpawn(150);
+  this.setNextSpawn(250);
   var springs = [this.generateItem('spring', 0)];
   var spikes = [4].map(function (pos) {
     return _this2.generateItem('spike', pos);
@@ -1079,7 +977,7 @@ function springTrap() {
 function jumpAndJump() {
   var _this3 = this;
 
-  this.setNextSpawn(200);
+  this.setNextSpawn(300);
   var lowBlock = [this.generateItem('block_low', 0)];
   var midBlock = [this.generateItem('block_mid', 3)];
   var highBlocks = [6, 10, 14].map(function (pos) {
@@ -1094,7 +992,7 @@ function jumpAndJump() {
 function easySpikeJump() {
   var _this4 = this;
 
-  this.setNextSpawn(200);
+  this.setNextSpawn(300);
   var blocks = [1, 2, 3, 7, 8, 9, 10, 14].map(function (pos) {
     return _this4.generateItem('block_low', pos);
   });
@@ -1108,7 +1006,7 @@ function alternateJump() {
   var _this5 = this;
 
   var numberOfBlocks = Math.ceil(Math.random() * 5);
-  this.setNextSpawn(50 * numberOfBlocks);
+  this.setNextSpawn(100 * numberOfBlocks);
   var lowBlocks = [].concat(_toConsumableArray(Array(numberOfBlocks * 4).keys())).map(function (pos) {
     return _this5.generateItem('block_low', pos);
   });
@@ -1121,7 +1019,7 @@ function alternateJump() {
 function springOverSpikes() {
   var _this6 = this;
 
-  this.setNextSpawn(200);
+  this.setNextSpawn(300);
   var spring = [this.generateItem('spring', 0)];
   var spikes = [1, 2, 3, 5, 6, 7].map(function (pos) {
     return _this6.generateItem('spike', pos);
@@ -1133,6 +1031,105 @@ function springOverSpikes() {
 var Clusters = [springAndJump, springTrap, jumpAndJump, easySpikeJump, alternateJump, springOverSpikes];
 
 exports.default = Clusters;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.checkCollision = checkCollision;
+function checkCollision(objectA, objectB) {
+  var xDistance = objectA.pos[0] + objectA.width / 2 - (objectB.pos[0] + objectB.width / 2);
+  var yDistance = objectA.pos[1] + objectA.height / 2 - (objectB.pos[1] + objectB.height / 2);
+  var width = (objectA.width + objectB.width) / 2;
+  var height = (objectA.height + objectB.height) / 2;
+
+  if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
+    if (Math.abs(xDistance) / width * 0.80 > Math.abs(yDistance) / height) {
+      return 'side';
+    }
+    return 'top';
+  }
+  return 'none';
+}
+
+var NORMAL_FRAME_TIME_DELTA = exports.NORMAL_FRAME_TIME_DELTA = 1000 / 60;
+var OBJECT_SPEED = exports.OBJECT_SPEED = 7;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = __webpack_require__(13);
+
+var _player = __webpack_require__(1);
+
+var _player2 = _interopRequireDefault(_player);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Bot = function () {
+  function Bot(game) {
+    _classCallCheck(this, Bot);
+
+    this.game = game;
+  }
+
+  _createClass(Bot, [{
+    key: 'closeObjects',
+    value: function closeObjects() {
+      var _this = this;
+
+      return this.game.movingObjects().filter(function (object) {
+        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
+      });
+    }
+  }, {
+    key: 'getAction',
+    value: function getAction() {
+      var timeDelta = 1000 / 60;
+      var simulate = (0, _lodash.cloneDeep)(this.game);
+      if (this.game.player.speed === 0) {
+        if (this.closeObjects().length > 0) {
+          simulate.player.jump(this.game.height * 0.20);
+          simulate.move(timeDelta);
+          while (simulate.player.speed !== 0 && !simulate.over) {
+            simulate.checkCollisions();
+            simulate.move(timeDelta);
+          }
+          simulate.checkCollisions();
+          if (simulate.over) {
+            this.game.jump = false;
+          } else {
+            this.game.jump = true;
+          }
+        }
+      } else {
+        this.game.jump = false;
+      }
+    }
+  }]);
+
+  return Bot;
+}();
+
+exports.default = Bot;
 
 /***/ }),
 /* 13 */
