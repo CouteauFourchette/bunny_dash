@@ -26,8 +26,13 @@ class GameView {
     this.score += 0.1;
     this.ctx.fillStyle = 'white';
     this.ctx.font = '40px Arial';
+    this.ctx.textAlign = 'center';
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, (this.game.width - 250), 80);
-    if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
+    if (this.bot) {
+      this.ctx.fillText('AI Bot Mode', 150, 80);
+    } else {
+      this.ctx.fillText('Human Mode', 150, 80);
+    }
     this.lastTime = time;
     requestAnimationFrame(this.animate.bind(this));
   }
@@ -69,9 +74,13 @@ class GameView {
     this.ctx.fillText('Game Over', this.game.width / 2, (this.game.height / 2) - 50);
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, this.game.width / 2, (this.game.height / 2) + 50);
     this.ctx.font = '50px Arial';
-    this.ctx.fillText(`Press Space or Click to start`, this.game.width / 2, (this.game.height / 2) + 150);
+    this.ctx.fillText('Press Space or Click to start', this.game.width / 2, (this.game.height / 2) + 150);
     this.ctx.font = '40px Arial';
-    if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
+    if (this.bot) {
+      this.ctx.fillText('AI Bot Mode', 150, 80);
+    } else {
+      this.ctx.fillText('Human Mode', 150, 80);
+    }
   }
 }
 

@@ -73,10 +73,39 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.checkCollision = checkCollision;
+function checkCollision(objectA, objectB) {
+  var xDistance = objectA.pos[0] + objectA.width / 2 - (objectB.pos[0] + objectB.width / 2);
+  var yDistance = objectA.pos[1] + objectA.height / 2 - (objectB.pos[1] + objectB.height / 2);
+  var width = (objectA.width + objectB.width) / 2;
+  var height = (objectA.height + objectB.height) / 2;
+
+  if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
+    if (Math.abs(xDistance) / width * 0.80 > Math.abs(yDistance) / height) {
+      return 'side';
+    }
+    return 'top';
+  }
+  return 'none';
+}
+
+var NORMAL_FRAME_TIME_DELTA = exports.NORMAL_FRAME_TIME_DELTA = 1000 / 60;
+var OBJECT_SPEED = exports.OBJECT_SPEED = 7;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(11);
+var _util = __webpack_require__(0);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -114,87 +143,6 @@ var MovingObject = function () {
 exports.default = MovingObject;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = __webpack_require__(11);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Player = function () {
-  function Player(width, height, initialPos) {
-    _classCallCheck(this, Player);
-
-    this.width = width;
-    this.height = height;
-    this.pos = initialPos;
-    this.speed = _util.OBJECT_SPEED * 1.5;
-    this.jumpHeight = -1;
-    this.ticksPerFrame = 5;
-    this.tickCount = 0;
-    this.frameIndex = 0;
-    this.imageFrames = [];
-    var imageSources = ['dist/images/bunny/bunny1_walk1.png', 'dist/images/bunny/bunny1_walk2.png', 'dist/images/bunny/bunny1_jump.png'];
-    for (var i = 0; i < 3; i += 1) {
-      var image = new Image();
-      image.src = imageSources[i];
-      this.imageFrames.push(image);
-    }
-  }
-
-  _createClass(Player, [{
-    key: 'move',
-    value: function move(delta) {
-      this.tickCount += 1;
-      if (this.tickCount > this.ticksPerFrame) {
-        this.frameIndex = this.frameIndex === 0 ? 1 : 0;
-        this.tickCount = 0;
-      }
-      if (this.jumpHeight !== -1) {
-        if (this.pos[1] > this.jumpHeight) {
-          this.speed = -_util.OBJECT_SPEED * 1.5;
-          this.frameIndex = 2;
-        } else {
-          this.jumpHeight = -1;
-          this.speed = _util.OBJECT_SPEED * 1.5;
-        }
-      }
-      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
-      var offsetY = this.speed * velocityScale;
-      this.pos[1] += offsetY;
-    }
-  }, {
-    key: 'jump',
-    value: function jump(jumpHeight) {
-      if (this.speed === 0) {
-        this.frameIndex = 3;
-        this.tickCount = 0;
-        this.jumpHeight = this.pos[1] - jumpHeight;
-      }
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      var image = this.imageFrames[this.frameIndex];
-      ctx.drawImage(image, this.pos[0], this.pos[1] - this.height * 0.66, this.width, this.height * 1.66);
-    }
-  }]);
-
-  return Player;
-}();
-
-exports.default = Player;
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -207,7 +155,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _moving_object = __webpack_require__(0);
+var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
@@ -271,7 +219,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _moving_object = __webpack_require__(0);
+var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
@@ -328,7 +276,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _moving_object = __webpack_require__(0);
+var _moving_object = __webpack_require__(1);
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
@@ -469,8 +417,13 @@ var GameView = function () {
       this.score += 0.1;
       this.ctx.fillStyle = 'white';
       this.ctx.font = '40px Arial';
+      this.ctx.textAlign = 'center';
       this.ctx.fillText('Score: ' + Math.round(this.score), this.game.width - 250, 80);
-      if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
+      if (this.bot) {
+        this.ctx.fillText('AI Bot Mode', 150, 80);
+      } else {
+        this.ctx.fillText('Human Mode', 150, 80);
+      }
       this.lastTime = time;
       requestAnimationFrame(this.animate.bind(this));
     }
@@ -532,7 +485,11 @@ var GameView = function () {
       this.ctx.font = '50px Arial';
       this.ctx.fillText('Press Space or Click to start', this.game.width / 2, this.game.height / 2 + 150);
       this.ctx.font = '40px Arial';
-      if (this.bot) this.ctx.fillText('AI Bot Mode', 150, 80);
+      if (this.bot) {
+        this.ctx.fillText('AI Bot Mode', 150, 80);
+      } else {
+        this.ctx.fillText('Human Mode', 150, 80);
+      }
     }
   }]);
 
@@ -558,7 +515,7 @@ var _floor = __webpack_require__(8);
 
 var _floor2 = _interopRequireDefault(_floor);
 
-var _player = __webpack_require__(1);
+var _player = __webpack_require__(9);
 
 var _player2 = _interopRequireDefault(_player);
 
@@ -574,11 +531,11 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_generator = __webpack_require__(9);
+var _level_generator = __webpack_require__(10);
 
 var _level_generator2 = _interopRequireDefault(_level_generator);
 
-var _util = __webpack_require__(11);
+var _util = __webpack_require__(0);
 
 var Util = _interopRequireWildcard(_util);
 
@@ -807,7 +764,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(11);
+var _util = __webpack_require__(0);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -856,6 +813,87 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _util = __webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Player = function () {
+  function Player(width, height, initialPos) {
+    _classCallCheck(this, Player);
+
+    this.width = width;
+    this.height = height;
+    this.pos = initialPos;
+    this.speed = _util.OBJECT_SPEED * 1.5;
+    this.jumpHeight = -1;
+    this.ticksPerFrame = 5;
+    this.tickCount = 0;
+    this.frameIndex = 0;
+    this.imageFrames = [];
+    var imageSources = ['dist/images/bunny/bunny1_walk1.png', 'dist/images/bunny/bunny1_walk2.png', 'dist/images/bunny/bunny1_jump.png'];
+    for (var i = 0; i < 3; i += 1) {
+      var image = new Image();
+      image.src = imageSources[i];
+      this.imageFrames.push(image);
+    }
+  }
+
+  _createClass(Player, [{
+    key: 'move',
+    value: function move(delta) {
+      this.tickCount += 1;
+      if (this.tickCount > this.ticksPerFrame) {
+        this.frameIndex = this.frameIndex === 0 ? 1 : 0;
+        this.tickCount = 0;
+      }
+      if (this.jumpHeight !== -1) {
+        if (this.pos[1] > this.jumpHeight) {
+          this.speed = -_util.OBJECT_SPEED * 1.5;
+          this.frameIndex = 2;
+        } else {
+          this.jumpHeight = -1;
+          this.speed = _util.OBJECT_SPEED * 1.5;
+        }
+      }
+      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
+      var offsetY = this.speed * velocityScale;
+      this.pos[1] += offsetY;
+    }
+  }, {
+    key: 'jump',
+    value: function jump(jumpHeight) {
+      if (this.speed === 0) {
+        this.frameIndex = 3;
+        this.tickCount = 0;
+        this.jumpHeight = this.pos[1] - jumpHeight;
+      }
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      var image = this.imageFrames[this.frameIndex];
+      ctx.drawImage(image, this.pos[0], this.pos[1] - this.height * 0.66, this.width, this.height * 1.66);
+    }
+  }]);
+
+  return Player;
+}();
+
+exports.default = Player;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _spring = __webpack_require__(2);
 
 var _spring2 = _interopRequireDefault(_spring);
@@ -868,7 +906,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_clusters = __webpack_require__(10);
+var _level_clusters = __webpack_require__(11);
 
 var _level_clusters2 = _interopRequireDefault(_level_clusters);
 
@@ -936,7 +974,7 @@ var LevelGenerator = function () {
 exports.default = LevelGenerator;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1031,35 +1069,6 @@ function springOverSpikes() {
 var Clusters = [springAndJump, springTrap, jumpAndJump, easySpikeJump, alternateJump, springOverSpikes];
 
 exports.default = Clusters;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.checkCollision = checkCollision;
-function checkCollision(objectA, objectB) {
-  var xDistance = objectA.pos[0] + objectA.width / 2 - (objectB.pos[0] + objectB.width / 2);
-  var yDistance = objectA.pos[1] + objectA.height / 2 - (objectB.pos[1] + objectB.height / 2);
-  var width = (objectA.width + objectB.width) / 2;
-  var height = (objectA.height + objectB.height) / 2;
-
-  if (Math.abs(xDistance) <= width && Math.abs(yDistance) <= height) {
-    if (Math.abs(xDistance) / width * 0.80 > Math.abs(yDistance) / height) {
-      return 'side';
-    }
-    return 'top';
-  }
-  return 'none';
-}
-
-var NORMAL_FRAME_TIME_DELTA = exports.NORMAL_FRAME_TIME_DELTA = 1000 / 60;
-var OBJECT_SPEED = exports.OBJECT_SPEED = 7;
 
 /***/ }),
 /* 12 */
