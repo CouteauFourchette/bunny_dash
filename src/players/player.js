@@ -1,4 +1,4 @@
-import { NORMAL_FRAME_TIME_DELTA, OBJECT_SPEED } from './util';
+import { NORMAL_FRAME_TIME_DELTA, OBJECT_SPEED } from '../util';
 
 class Player {
   constructor(width, height, initialPos) {

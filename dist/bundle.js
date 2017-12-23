@@ -341,7 +341,6 @@ document.addEventListener('DOMContentLoaded', function () {
   canvas.height = width / 2;
   var ctx = canvas.getContext('2d');
   var gameView = new _game_view2.default(ctx, canvas);
-  gameView.bindKeys(canvas);
   gameView.start();
 
   var humanButton = document.getElementById('human');
@@ -382,6 +381,14 @@ var _game = __webpack_require__(7);
 
 var _game2 = _interopRequireDefault(_game);
 
+var _human_player = __webpack_require__(15);
+
+var _human_player2 = _interopRequireDefault(_human_player);
+
+var _bot_player = __webpack_require__(17);
+
+var _bot_player2 = _interopRequireDefault(_bot_player);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -398,8 +405,12 @@ var GameView = function () {
   _createClass(GameView, [{
     key: 'start',
     value: function start() {
-      this.game = undefined;
-      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2, this.bot);
+      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2);
+      var player = new _human_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 5, this.game.height - this.game.floorSize - this.game.boxSize], this.canvas);
+      var bot = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
+      var bot2 = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
+      var bot3 = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
+      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2, [bot, bot2, bot3]);
       this.lastTime = 0;
       this.score = 0;
       requestAnimationFrame(this.animate.bind(this));
@@ -426,50 +437,6 @@ var GameView = function () {
       }
       this.lastTime = time;
       requestAnimationFrame(this.animate.bind(this));
-    }
-  }, {
-    key: 'handleMouseClick',
-    value: function handleMouseClick(jump) {
-      if (this.game.over) {
-        this.start();
-      } else {
-        this.game.jump = jump;
-      }
-    }
-  }, {
-    key: 'handleKeyPress',
-    value: function handleKeyPress(e, jump) {
-      if (e.keyCode === 32) {
-        if (this.game.over) {
-          this.start();
-        } else {
-          this.game.jump = jump;
-        }
-      }
-    }
-  }, {
-    key: 'bindKeys',
-    value: function bindKeys() {
-      var _this = this;
-
-      this.canvas.addEventListener('mousedown', function () {
-        return _this.handleMouseClick(true);
-      });
-      this.canvas.addEventListener('mouseup', function () {
-        return _this.handleMouseClick(false);
-      });
-      document.addEventListener('keydown', function (e) {
-        return _this.handleKeyPress(e, true);
-      });
-      document.addEventListener('keyup', function (e) {
-        return _this.handleKeyPress(e, false);
-      });
-      window.addEventListener('touchstart', function () {
-        return _this.handleMouseClick(true);
-      });
-      window.addEventListener('touchend', function () {
-        return _this.handleMouseClick(false);
-      });
     }
   }, {
     key: 'gameOver',
@@ -515,10 +482,6 @@ var _floor = __webpack_require__(8);
 
 var _floor2 = _interopRequireDefault(_floor);
 
-var _player = __webpack_require__(9);
-
-var _player2 = _interopRequireDefault(_player);
-
 var _spring = __webpack_require__(2);
 
 var _spring2 = _interopRequireDefault(_spring);
@@ -531,17 +494,13 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_generator = __webpack_require__(10);
+var _level_generator = __webpack_require__(9);
 
 var _level_generator2 = _interopRequireDefault(_level_generator);
 
 var _util = __webpack_require__(0);
 
 var Util = _interopRequireWildcard(_util);
-
-var _bot = __webpack_require__(12);
-
-var _bot2 = _interopRequireDefault(_bot);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -550,7 +509,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Game = function () {
-  function Game(width, height, bot) {
+  function Game(width, height, players) {
     _classCallCheck(this, Game);
 
     this.width = width;
@@ -561,13 +520,14 @@ var Game = function () {
     this.spikes = [];
     this.boxes = [];
     this.springs = [];
-    this.player = new _player2.default(this.boxSize, this.boxSize, [this.width / 5, this.height - this.floorSize - this.boxSize]);
+    this.players = players;
+    // this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
     this.floor = new _floor2.default(this.width, this.floorSize);
     this.over = false;
-    this.jump = false;
-    if (bot) {
-      this.bot = new _bot2.default(this);
-    }
+    // this.jump = false;
+    // if (bot) {
+    //   this.bot = new Bot(this);
+    // }
   }
 
   _createClass(Game, [{
@@ -583,7 +543,9 @@ var Game = function () {
         object.draw(ctx);
       });
 
-      this.player.draw(ctx);
+      this.players.forEach(function (player) {
+        return player.draw(ctx);
+      });
     }
   }, {
     key: 'movingObjects',
@@ -615,28 +577,32 @@ var Game = function () {
   }, {
     key: 'step',
     value: function step(delta) {
-      this.checkCollisions();
-      if (this.jump) this.player.jump(this.height * 0.27);
-      if (this.bot) {
-        this.bot.getAction(delta);
-      }
+      var _this2 = this;
+
+      this.players.forEach(function (player, idx) {
+        _this2.checkCollisions(player);
+        player.getAction(_this2, idx);
+        if (player.isJumping) player.jump(_this2.height * 0.27);
+      });
       this.move(delta);
       this.spawn();
     }
   }, {
     key: 'move',
     value: function move(delta) {
-      var _this2 = this;
+      var _this3 = this;
 
       var objects = this.movingObjects();
       objects.forEach(function (object) {
         object.move(delta);
-        if (object.pos[0] < -_this2.boxSize) {
-          _this2.remove(object);
+        if (object.pos[0] < -_this3.boxSize) {
+          _this3.remove(object);
         }
       });
       this.floor.move(delta);
-      this.player.move(delta);
+      this.players.forEach(function (player) {
+        return player.move(delta);
+      });
     }
   }, {
     key: 'remove',
@@ -661,37 +627,37 @@ var Game = function () {
     }
   }, {
     key: 'checkCollisions',
-    value: function checkCollisions() {
-      switch (this.checkBoxCollisions()) {
+    value: function checkCollisions(player) {
+      switch (this.checkBoxCollisions(player)) {
         case 'top':
-          this.player.speed = 0;
-          this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
+          player.speed = 0;
+          player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
           break;
         case 'side':
           this.over = true;
           break;
         default:
-          this.player.speed = this.boxSize / 7;
+          player.speed = this.boxSize / 7;
           break;
       }
-      if (this.checkFloorCollision()) {
-        this.player.speed = 0;
-        this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
+      if (this.checkFloorCollision(player)) {
+        player.speed = 0;
+        player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
       }
-      if (this.checkSpikeCollisions() !== 'none') {
+      if (this.checkSpikeCollisions(player) !== 'none') {
         this.over = true;
       }
-      if (this.checkSpringCollisions() === 'top') {
-        this.player.jump(this.height * 0.37);
+      if (this.checkSpringCollisions(player) === 'top') {
+        player.jump(this.height * 0.37);
       }
     }
   }, {
     key: 'checkSpikeCollisions',
-    value: function checkSpikeCollisions() {
+    value: function checkSpikeCollisions(player) {
       for (var i = 0; i < this.spikes.length; i += 1) {
         var spike = this.spikes[i];
-        if (spike.pos[0] > this.player.pos[0] + this.boxSize) return 'none';
-        if (Util.checkCollision(this.player, spike) !== 'none') {
+        if (spike.pos[0] > player.pos[0] + this.boxSize) return 'none';
+        if (Util.checkCollision(player, spike) !== 'none') {
           return 'collision';
         }
       }
@@ -699,11 +665,11 @@ var Game = function () {
     }
   }, {
     key: 'checkSpringCollisions',
-    value: function checkSpringCollisions() {
+    value: function checkSpringCollisions(player) {
       for (var i = 0; i < this.springs.length; i += 1) {
         var spring = this.springs[i];
-        if (spring.pos[0] > this.player.pos[0] + this.boxSize) return 'none';
-        if (Util.checkCollision(this.player, spring) === 'top') {
+        if (spring.pos[0] > player.pos[0] + this.boxSize) return 'none';
+        if (Util.checkCollision(player, spring) === 'top') {
           spring.on = true;
           return 'top';
         }
@@ -712,20 +678,20 @@ var Game = function () {
     }
   }, {
     key: 'checkFloorCollision',
-    value: function checkFloorCollision() {
-      if (Util.checkCollision(this.player, this.floor) === 'top') {
+    value: function checkFloorCollision(player) {
+      if (Util.checkCollision(player, this.floor) === 'top') {
         return true;
       }
       return false;
     }
   }, {
     key: 'checkBoxCollisions',
-    value: function checkBoxCollisions() {
+    value: function checkBoxCollisions(player) {
       var side = false;
       var top = false;
       for (var i = 0; i < this.boxes.length; i += 1) {
         var box = this.boxes[i];
-        switch (Util.checkCollision(this.player, box)) {
+        switch (Util.checkCollision(player, box)) {
           case 'side':
             side = true;
             break;
@@ -813,87 +779,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = __webpack_require__(0);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Player = function () {
-  function Player(width, height, initialPos) {
-    _classCallCheck(this, Player);
-
-    this.width = width;
-    this.height = height;
-    this.pos = initialPos;
-    this.speed = _util.OBJECT_SPEED * 1.5;
-    this.jumpHeight = -1;
-    this.ticksPerFrame = 5;
-    this.tickCount = 0;
-    this.frameIndex = 0;
-    this.imageFrames = [];
-    var imageSources = ['dist/images/bunny/bunny1_walk1.png', 'dist/images/bunny/bunny1_walk2.png', 'dist/images/bunny/bunny1_jump.png'];
-    for (var i = 0; i < 3; i += 1) {
-      var image = new Image();
-      image.src = imageSources[i];
-      this.imageFrames.push(image);
-    }
-  }
-
-  _createClass(Player, [{
-    key: 'move',
-    value: function move(delta) {
-      this.tickCount += 1;
-      if (this.tickCount > this.ticksPerFrame) {
-        this.frameIndex = this.frameIndex === 0 ? 1 : 0;
-        this.tickCount = 0;
-      }
-      if (this.jumpHeight !== -1) {
-        if (this.pos[1] > this.jumpHeight) {
-          this.speed = -_util.OBJECT_SPEED * 1.5;
-          this.frameIndex = 2;
-        } else {
-          this.jumpHeight = -1;
-          this.speed = _util.OBJECT_SPEED * 1.5;
-        }
-      }
-      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
-      var offsetY = this.speed * velocityScale;
-      this.pos[1] += offsetY;
-    }
-  }, {
-    key: 'jump',
-    value: function jump(jumpHeight) {
-      if (this.speed === 0) {
-        this.frameIndex = 3;
-        this.tickCount = 0;
-        this.jumpHeight = this.pos[1] - jumpHeight;
-      }
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      var image = this.imageFrames[this.frameIndex];
-      ctx.drawImage(image, this.pos[0], this.pos[1] - this.height * 0.66, this.width, this.height * 1.66);
-    }
-  }]);
-
-  return Player;
-}();
-
-exports.default = Player;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _spring = __webpack_require__(2);
 
 var _spring2 = _interopRequireDefault(_spring);
@@ -906,7 +791,7 @@ var _block = __webpack_require__(4);
 
 var _block2 = _interopRequireDefault(_block);
 
-var _level_clusters = __webpack_require__(11);
+var _level_clusters = __webpack_require__(10);
 
 var _level_clusters2 = _interopRequireDefault(_level_clusters);
 
@@ -974,7 +859,7 @@ var LevelGenerator = function () {
 exports.default = LevelGenerator;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1071,72 +956,8 @@ var Clusters = [springAndJump, springTrap, jumpAndJump, easySpikeJump, alternate
 exports.default = Clusters;
 
 /***/ }),
+/* 11 */,
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = __webpack_require__(13);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Bot = function () {
-  function Bot(game) {
-    _classCallCheck(this, Bot);
-
-    this.game = game;
-  }
-
-  _createClass(Bot, [{
-    key: 'closeObjects',
-    value: function closeObjects() {
-      var _this = this;
-
-      return this.game.movingObjects().filter(function (object) {
-        return object.pos[0] < _this.game.player.pos[0] + 3 * _this.game.boxSize && object.pos[0] > _this.game.player.pos[0];
-      });
-    }
-  }, {
-    key: 'getAction',
-    value: function getAction() {
-      var timeDelta = 1000 / 60;
-      var simulate = (0, _lodash.cloneDeep)(this.game);
-      if (this.game.player.speed === 0) {
-        if (this.closeObjects().length > 0) {
-          simulate.player.jump(this.game.height * 0.27);
-          simulate.move(timeDelta);
-          while (simulate.player.speed !== 0 && !simulate.over) {
-            simulate.checkCollisions();
-            simulate.move(timeDelta);
-          }
-          simulate.move(timeDelta);
-          simulate.checkCollisions();
-          if (simulate.over) {
-            this.game.jump = false;
-          } else {
-            this.game.jump = true;
-          }
-        }
-      } else {
-        this.game.jump = false;
-      }
-    }
-  }]);
-
-  return Bot;
-}();
-
-exports.default = Bot;
-
-/***/ }),
-/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -18225,10 +18046,10 @@ exports.default = Bot;
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14), __webpack_require__(15)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13), __webpack_require__(14)(module)))
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports) {
 
 var g;
@@ -18255,7 +18076,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -18281,6 +18102,255 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _player = __webpack_require__(16);
+
+var _player2 = _interopRequireDefault(_player);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var HumanPlayer = function (_Player) {
+  _inherits(HumanPlayer, _Player);
+
+  function HumanPlayer(width, height, initialPos, canvas) {
+    _classCallCheck(this, HumanPlayer);
+
+    var _this = _possibleConstructorReturn(this, (HumanPlayer.__proto__ || Object.getPrototypeOf(HumanPlayer)).call(this, width, height, initialPos));
+
+    _this.canvas = canvas;
+    _this.bindKeys();
+    return _this;
+  }
+
+  _createClass(HumanPlayer, [{
+    key: 'handleMouseClick',
+    value: function handleMouseClick(jump) {
+      // if (this.game.over) {
+      //   this.start();
+      // } else {
+
+      // }
+      this.isJumping = jump;
+    }
+  }, {
+    key: 'handleKeyPress',
+    value: function handleKeyPress(e, jump) {
+      if (e.keyCode === 32) {
+        // if (this.game.over) {
+        //   this.start();
+        // } else {
+
+        // }
+        this.isJumping = jump;
+      }
+    }
+  }, {
+    key: 'getAction',
+    value: function getAction() {}
+  }, {
+    key: 'bindKeys',
+    value: function bindKeys() {
+      var _this2 = this;
+
+      this.canvas.addEventListener('mousedown', function () {
+        return _this2.handleMouseClick(true);
+      });
+      this.canvas.addEventListener('mouseup', function () {
+        return _this2.handleMouseClick(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        return _this2.handleKeyPress(e, true);
+      });
+      document.addEventListener('keyup', function (e) {
+        return _this2.handleKeyPress(e, false);
+      });
+      window.addEventListener('touchstart', function () {
+        return _this2.handleMouseClick(true);
+      });
+      window.addEventListener('touchend', function () {
+        return _this2.handleMouseClick(false);
+      });
+    }
+  }]);
+
+  return HumanPlayer;
+}(_player2.default);
+
+exports.default = HumanPlayer;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Player = function () {
+  function Player(width, height, initialPos) {
+    _classCallCheck(this, Player);
+
+    this.width = width;
+    this.height = height;
+    this.pos = initialPos;
+    this.speed = _util.OBJECT_SPEED * 1.5;
+    this.jumpHeight = -1;
+    this.ticksPerFrame = 5;
+    this.tickCount = 0;
+    this.frameIndex = 0;
+    this.imageFrames = [];
+    var imageSources = ['dist/images/bunny/bunny1_walk1.png', 'dist/images/bunny/bunny1_walk2.png', 'dist/images/bunny/bunny1_jump.png'];
+    for (var i = 0; i < 3; i += 1) {
+      var image = new Image();
+      image.src = imageSources[i];
+      this.imageFrames.push(image);
+    }
+  }
+
+  _createClass(Player, [{
+    key: 'move',
+    value: function move(delta) {
+      this.tickCount += 1;
+      if (this.tickCount > this.ticksPerFrame) {
+        this.frameIndex = this.frameIndex === 0 ? 1 : 0;
+        this.tickCount = 0;
+      }
+      if (this.jumpHeight !== -1) {
+        if (this.pos[1] > this.jumpHeight) {
+          this.speed = -_util.OBJECT_SPEED * 1.5;
+          this.frameIndex = 2;
+        } else {
+          this.jumpHeight = -1;
+          this.speed = _util.OBJECT_SPEED * 1.5;
+        }
+      }
+      var velocityScale = delta / _util.NORMAL_FRAME_TIME_DELTA;
+      var offsetY = this.speed * velocityScale;
+      this.pos[1] += offsetY;
+    }
+  }, {
+    key: 'jump',
+    value: function jump(jumpHeight) {
+      if (this.speed === 0) {
+        this.frameIndex = 3;
+        this.tickCount = 0;
+        this.jumpHeight = this.pos[1] - jumpHeight;
+      }
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      var image = this.imageFrames[this.frameIndex];
+      ctx.drawImage(image, this.pos[0], this.pos[1] - this.height * 0.66, this.width, this.height * 1.66);
+    }
+  }]);
+
+  return Player;
+}();
+
+exports.default = Player;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = __webpack_require__(12);
+
+var _player = __webpack_require__(16);
+
+var _player2 = _interopRequireDefault(_player);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function closeObjects(game, idx) {
+  return game.movingObjects().filter(function (object) {
+    return object.pos[0] < game.players[idx].pos[0] + 3 * game.boxSize && object.pos[0] > game.players[idx].pos[0];
+  });
+}
+
+var BotPlayer = function (_Player) {
+  _inherits(BotPlayer, _Player);
+
+  function BotPlayer() {
+    _classCallCheck(this, BotPlayer);
+
+    return _possibleConstructorReturn(this, (BotPlayer.__proto__ || Object.getPrototypeOf(BotPlayer)).apply(this, arguments));
+  }
+
+  _createClass(BotPlayer, [{
+    key: 'getAction',
+    value: function getAction(game, idx) {
+      var timeDelta = 1000 / 60;
+      var simulate = (0, _lodash.cloneDeep)(game);
+      if (game.players[idx].speed === 0) {
+        if (closeObjects(game, idx).length > 0) {
+          simulate.players[idx].jump(game.height * 0.27);
+          simulate.move(timeDelta);
+          while (simulate.players[idx].speed !== 0 && !simulate.over) {
+            simulate.checkCollisions(simulate.players[0]);
+            simulate.move(timeDelta);
+          }
+          simulate.move(timeDelta);
+          simulate.checkCollisions(simulate.players[0]);
+          if (simulate.over) {
+            this.isJumping = false;
+          } else {
+            this.isJumping = true;
+          }
+        }
+      } else {
+        this.isJumping = false;
+      }
+    }
+  }]);
+
+  return BotPlayer;
+}(_player2.default);
+
+exports.default = BotPlayer;
 
 /***/ })
 /******/ ]);

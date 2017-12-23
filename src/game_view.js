@@ -1,4 +1,6 @@
 import Game from './game';
+import HumanPlayer from './players/human_player';
+import BotPlayer from './players/bot_player';
 
 class GameView {
   constructor(ctx, canvas) {
@@ -8,8 +10,12 @@ class GameView {
   }
 
   start() {
-    this.game = undefined;
-    this.game = new Game(this.canvas.width, (this.canvas.width / 2), this.bot);
+    this.game = new Game(this.canvas.width, (this.canvas.width / 2));
+    const player = new HumanPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 5, (this.game.height - this.game.floorSize - this.game.boxSize)], this.canvas);
+    const bot = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
+    const bot2 = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
+    const bot3 = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
+    this.game = new Game(this.canvas.width, (this.canvas.width / 2), [bot, bot2, bot3]);
     this.lastTime = 0;
     this.score = 0;
     requestAnimationFrame(this.animate.bind(this));
@@ -37,32 +43,6 @@ class GameView {
     requestAnimationFrame(this.animate.bind(this));
   }
 
-  handleMouseClick(jump) {
-    if (this.game.over) {
-      this.start();
-    } else {
-      this.game.jump = jump;
-    }
-  }
-
-  handleKeyPress(e, jump) {
-    if (e.keyCode === 32) {
-      if (this.game.over) {
-        this.start();
-      } else {
-        this.game.jump = jump;
-      }
-    }
-  }
-
-  bindKeys() {
-    this.canvas.addEventListener('mousedown', () => this.handleMouseClick(true));
-    this.canvas.addEventListener('mouseup', () => this.handleMouseClick(false));
-    document.addEventListener('keydown', e => this.handleKeyPress(e, true));
-    document.addEventListener('keyup', e => this.handleKeyPress(e, false));
-    window.addEventListener('touchstart', () => this.handleMouseClick(true));
-    window.addEventListener('touchend', () => this.handleMouseClick(false));
-  }
 
   gameOver() {
     this.ctx.clearRect(0, 0, this.game.width, this.game.height);

@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.height = (width / 2);
   const ctx = canvas.getContext('2d');
   const gameView = new GameView(ctx, canvas);
-  gameView.bindKeys(canvas);
   gameView.start();
 
   const humanButton = document.getElementById('human');

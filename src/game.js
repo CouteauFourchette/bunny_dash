@@ -1,14 +1,12 @@
 import Floor from './floor';
-import Player from './player';
 import Spring from './moving_objects/spring';
 import Spike from './moving_objects/spike';
 import Block from './moving_objects/block';
 import LevelGenerator from './level_generator';
 import * as Util from './util';
-import Bot from './bot';
 
 class Game {
-  constructor(width, height, bot) {
+  constructor(width, height, players) {
     this.width = width;
     this.height = height;
     this.floorSize = this.height / 5;
@@ -17,13 +15,14 @@ class Game {
     this.spikes = [];
     this.boxes = [];
     this.springs = [];
-    this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
+    this.players = players;
+    // this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
     this.floor = new Floor(this.width, this.floorSize);
     this.over = false;
-    this.jump = false;
-    if (bot) {
-      this.bot = new Bot(this);
-    }
+    // this.jump = false;
+    // if (bot) {
+    //   this.bot = new Bot(this);
+    // }
   }
 
   draw(ctx) {
@@ -37,7 +36,7 @@ class Game {
       object.draw(ctx);
     });
   
-    this.player.draw(ctx);
+    this.players.forEach(player => player.draw(ctx));
   }
 
   movingObjects() {
@@ -64,11 +63,11 @@ class Game {
   }
 
   step(delta) {
-    this.checkCollisions();
-    if (this.jump) this.player.jump(this.height * 0.27);
-    if (this.bot) {
-      this.bot.getAction(delta);
-    }
+    this.players.forEach((player, idx) => {
+      this.checkCollisions(player);
+      player.getAction(this, idx);
+      if (player.isJumping) player.jump(this.height * 0.27);
+    });
     this.move(delta);
     this.spawn();
   }
@@ -82,7 +81,7 @@ class Game {
       }
     });
     this.floor.move(delta);
-    this.player.move(delta);
+    this.players.forEach(player => player.move(delta));
   }
 
   remove(object) {
@@ -105,47 +104,47 @@ class Game {
     }
   }
 
-  checkCollisions() {
-    switch (this.checkBoxCollisions()) {
+  checkCollisions(player) {
+    switch (this.checkBoxCollisions(player)) {
       case 'top':
-        this.player.speed = 0;
-        this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
+        player.speed = 0;
+        player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
         break;
       case 'side':
         this.over = true;
         break;
       default:
-        this.player.speed = (this.boxSize / 7);
+        player.speed = (this.boxSize / 7);
         break;
     }
-    if (this.checkFloorCollision()) {
-      this.player.speed = 0;
-      this.player.pos[1] = Math.round(this.player.pos[1] / this.boxSize) * this.boxSize;
+    if (this.checkFloorCollision(player)) {
+      player.speed = 0;
+      player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
     }
-    if (this.checkSpikeCollisions() !== 'none') {
+    if (this.checkSpikeCollisions(player) !== 'none') {
       this.over = true;
     }
-    if (this.checkSpringCollisions() === 'top') {
-      this.player.jump(this.height * 0.37);
+    if (this.checkSpringCollisions(player) === 'top') {
+      player.jump(this.height * 0.37);
     }
   }
 
-  checkSpikeCollisions() {
+  checkSpikeCollisions(player) {
     for (let i = 0; i < this.spikes.length; i += 1) {
       const spike = this.spikes[i];
-      if (spike.pos[0] > this.player.pos[0] + this.boxSize) return 'none';
-      if (Util.checkCollision(this.player, spike) !== 'none') {
+      if (spike.pos[0] > player.pos[0] + this.boxSize) return 'none';
+      if (Util.checkCollision(player, spike) !== 'none') {
         return 'collision';
       }
     }
     return 'none';
   }
 
-  checkSpringCollisions() {
+  checkSpringCollisions(player) {
     for (let i = 0; i < this.springs.length; i += 1) {
       const spring = this.springs[i];
-      if (spring.pos[0] > this.player.pos[0] + this.boxSize) return 'none';
-      if (Util.checkCollision(this.player, spring) === 'top') {
+      if (spring.pos[0] > player.pos[0] + this.boxSize) return 'none';
+      if (Util.checkCollision(player, spring) === 'top') {
         spring.on = true;
         return 'top';
       }
@@ -153,19 +152,19 @@ class Game {
     return 'none';
   }
 
-  checkFloorCollision() {
-    if (Util.checkCollision(this.player, this.floor) === 'top') {
+  checkFloorCollision(player) {
+    if (Util.checkCollision(player, this.floor) === 'top') {
       return true;
     }
     return false;
   }
 
-  checkBoxCollisions() {
+  checkBoxCollisions(player) {
     let side = false;
     let top = false;
     for (let i = 0; i < this.boxes.length; i += 1) {
       const box = this.boxes[i];
-      switch (Util.checkCollision(this.player, box)) {
+      switch (Util.checkCollision(player, box)) {
         case 'side':
           side = true;
           break;
