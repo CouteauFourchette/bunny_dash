@@ -406,11 +406,11 @@ var GameView = function () {
     key: 'start',
     value: function start() {
       this.game = new _game2.default(this.canvas.width, this.canvas.width / 2);
-      var player = new _human_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 5, this.game.height - this.game.floorSize - this.game.boxSize], this.canvas);
-      var bot = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
-      var bot2 = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
-      var bot3 = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.width / 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
-      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2, [bot, bot2, bot3]);
+      var player = new _human_player2.default(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 5, this.game.height - this.game.floorSize - this.game.boxSize], this.canvas);
+      var bot = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 3, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
+      var bot2 = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 5, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
+      var bot3 = new _bot_player2.default(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 7, this.game.height - this.game.floorSize - this.game.boxSize], this.game);
+      this.game = new _game2.default(this.canvas.width, this.canvas.width / 2, [player, bot, bot2, bot3]);
       this.lastTime = 0;
       this.score = 0;
       requestAnimationFrame(this.animate.bind(this));
@@ -521,13 +521,8 @@ var Game = function () {
     this.boxes = [];
     this.springs = [];
     this.players = players;
-    // this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
     this.floor = new _floor2.default(this.width, this.floorSize);
     this.over = false;
-    // this.jump = false;
-    // if (bot) {
-    //   this.bot = new Bot(this);
-    // }
   }
 
   _createClass(Game, [{
@@ -586,6 +581,9 @@ var Game = function () {
       });
       this.move(delta);
       this.spawn();
+      this.players = this.players.filter(function (player) {
+        return !player.dead;
+      });
     }
   }, {
     key: 'move',
@@ -634,7 +632,7 @@ var Game = function () {
           player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
           break;
         case 'side':
-          this.over = true;
+          player.dead = true;
           break;
         default:
           player.speed = this.boxSize / 7;
@@ -645,7 +643,7 @@ var Game = function () {
         player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
       }
       if (this.checkSpikeCollisions(player) !== 'none') {
-        this.over = true;
+        player.dead = true;
       }
       if (this.checkSpringCollisions(player) === 'top') {
         player.jump(this.height * 0.37);
@@ -18330,12 +18328,12 @@ var BotPlayer = function (_Player) {
           simulate.players[idx].jump(game.height * 0.27);
           simulate.move(timeDelta);
           while (simulate.players[idx].speed !== 0 && !simulate.over) {
-            simulate.checkCollisions(simulate.players[0]);
+            simulate.checkCollisions(simulate.players[idx]);
             simulate.move(timeDelta);
           }
           simulate.move(timeDelta);
-          simulate.checkCollisions(simulate.players[0]);
-          if (simulate.over) {
+          simulate.checkCollisions(simulate.players[idx]);
+          if (simulate.players[idx].dead) {
             this.isJumping = false;
           } else {
             this.isJumping = true;

@@ -11,11 +11,11 @@ class GameView {
 
   start() {
     this.game = new Game(this.canvas.width, (this.canvas.width / 2));
-    const player = new HumanPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 5, (this.game.height - this.game.floorSize - this.game.boxSize)], this.canvas);
-    const bot = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
-    const bot2 = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
-    const bot3 = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.width / 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
-    this.game = new Game(this.canvas.width, (this.canvas.width / 2), [bot, bot2, bot3]);
+    const player = new HumanPlayer(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 5, (this.game.height - this.game.floorSize - this.game.boxSize)], this.canvas);
+    const bot = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 3, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
+    const bot2 = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 5, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
+    const bot3 = new BotPlayer(this.game.boxSize, this.game.boxSize, [this.game.boxSize * 7, (this.game.height - this.game.floorSize - this.game.boxSize)], this.game);
+    this.game = new Game(this.canvas.width, (this.canvas.width / 2), [player, bot, bot2, bot3]);
     this.lastTime = 0;
     this.score = 0;
     requestAnimationFrame(this.animate.bind(this));

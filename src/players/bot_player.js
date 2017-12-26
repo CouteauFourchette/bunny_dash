@@ -18,12 +18,12 @@ class BotPlayer extends Player {
         simulate.players[idx].jump(game.height * 0.27);
         simulate.move(timeDelta);
         while (simulate.players[idx].speed !== 0 && !simulate.over) {
-          simulate.checkCollisions(simulate.players[0]);
+          simulate.checkCollisions(simulate.players[idx]);
           simulate.move(timeDelta);
         }
         simulate.move(timeDelta);
-        simulate.checkCollisions(simulate.players[0]);
-        if (simulate.over) {
+        simulate.checkCollisions(simulate.players[idx]);
+        if (simulate.players[idx].dead) {
           this.isJumping = false;
         } else {
           this.isJumping = true;

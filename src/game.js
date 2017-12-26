@@ -16,13 +16,8 @@ class Game {
     this.boxes = [];
     this.springs = [];
     this.players = players;
-    // this.player = new Player(this.boxSize, this.boxSize, [this.width / 5, (this.height - this.floorSize - this.boxSize)]);
     this.floor = new Floor(this.width, this.floorSize);
     this.over = false;
-    // this.jump = false;
-    // if (bot) {
-    //   this.bot = new Bot(this);
-    // }
   }
 
   draw(ctx) {
@@ -70,6 +65,7 @@ class Game {
     });
     this.move(delta);
     this.spawn();
+    this.players = this.players.filter(player => !player.dead);
   }
 
   move(delta) {
@@ -111,7 +107,7 @@ class Game {
         player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
         break;
       case 'side':
-        this.over = true;
+        player.dead = true;
         break;
       default:
         player.speed = (this.boxSize / 7);
@@ -122,7 +118,7 @@ class Game {
       player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
     }
     if (this.checkSpikeCollisions(player) !== 'none') {
-      this.over = true;
+      player.dead = true;
     }
     if (this.checkSpringCollisions(player) === 'top') {
       player.jump(this.height * 0.37);
