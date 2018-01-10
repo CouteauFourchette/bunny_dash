@@ -6,9 +6,11 @@ class GameView {
   constructor(ctx, canvas) {
     this.ctx = ctx;
     this.canvas = canvas;
+    this.start = this.start.bind(this);
   }
 
   start() {
+    this.bindKeys(false);
     let player = new HumanPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 5, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)], this.canvas);
     if (this.bot) player = new BotPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 3, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)]);
     this.game = new Game([player]);
@@ -41,6 +43,7 @@ class GameView {
 
 
   gameOver() {
+    this.bindKeys(true);
     this.ctx.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
     this.ctx.fillStyle = 'transparent';
     this.ctx.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
@@ -56,6 +59,18 @@ class GameView {
       this.ctx.fillText('AI Bot Mode', 150, 80);
     } else {
       this.ctx.fillText('Human Mode', 150, 80);
+    }
+  }
+
+  bindKeys(on) {
+    if (on) {
+      this.canvas.addEventListener('mousedown', this.start);
+      document.addEventListener('keydown', this.start);
+      window.addEventListener('touchstart', this.start);
+    } else {
+      this.canvas.removeEventListener('mousedown', this.start);
+      document.removeEventListener('keydown', this.start);
+      window.removeEventListener('touchstart', this.start);
     }
   }
 }

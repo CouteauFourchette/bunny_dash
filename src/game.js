@@ -62,6 +62,7 @@ class Game {
     this.move(delta);
     this.spawn();
     this.players = this.players.filter(player => !player.dead);
+    if (this.players.length === 0) this.over = true;
   }
 
   move(delta) {

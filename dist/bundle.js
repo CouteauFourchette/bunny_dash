@@ -257,6 +257,7 @@ var Game = function () {
       this.players = this.players.filter(function (player) {
         return !player.dead;
       });
+      if (this.players.length === 0) this.over = true;
     }
   }, {
     key: 'move',
@@ -677,9 +678,6 @@ document.addEventListener('DOMContentLoaded', function () {
     gameView.bot = false;
     gameView.game.over = true;
     gameView.gameOver();
-    setTimeout(function () {
-      gameView.start();
-    }, 300);
   });
 
   var aiButton = document.getElementById('ai');
@@ -687,9 +685,6 @@ document.addEventListener('DOMContentLoaded', function () {
     gameView.bot = true;
     gameView.game.over = true;
     gameView.gameOver();
-    setTimeout(function () {
-      gameView.start();
-    }, 300);
   });
 });
 
@@ -734,11 +729,13 @@ var GameView = function () {
 
     this.ctx = ctx;
     this.canvas = canvas;
+    this.start = this.start.bind(this);
   }
 
   _createClass(GameView, [{
     key: 'start',
     value: function start() {
+      this.bindKeys(false);
       var player = new _human_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 5, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE], this.canvas);
       if (this.bot) player = new _bot_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 3, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE]);
       this.game = new _game2.default([player]);
@@ -772,6 +769,7 @@ var GameView = function () {
   }, {
     key: 'gameOver',
     value: function gameOver() {
+      this.bindKeys(true);
       this.ctx.clearRect(0, 0, _game2.default.WIDTH, _game2.default.HEIGHT);
       this.ctx.fillStyle = 'transparent';
       this.ctx.fillRect(0, 0, _game2.default.WIDTH, _game2.default.HEIGHT);
@@ -787,6 +785,19 @@ var GameView = function () {
         this.ctx.fillText('AI Bot Mode', 150, 80);
       } else {
         this.ctx.fillText('Human Mode', 150, 80);
+      }
+    }
+  }, {
+    key: 'bindKeys',
+    value: function bindKeys(on) {
+      if (on) {
+        this.canvas.addEventListener('mousedown', this.start);
+        document.addEventListener('keydown', this.start);
+        window.addEventListener('touchstart', this.start);
+      } else {
+        this.canvas.removeEventListener('mousedown', this.start);
+        document.removeEventListener('keydown', this.start);
+        window.removeEventListener('touchstart', this.start);
       }
     }
   }]);

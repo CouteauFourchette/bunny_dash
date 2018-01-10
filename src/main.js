@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gameView.bot = false;
     gameView.game.over = true;
     gameView.gameOver();
-    setTimeout(() => {
-      gameView.start();
-    }, 300);
   });
 
   const aiButton = document.getElementById('ai');
@@ -24,9 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gameView.bot = true;
     gameView.game.over = true;
     gameView.gameOver();
-    setTimeout(() => {
-      gameView.start();
-    }, 300);
   });
 });
 
