@@ -6,10 +6,7 @@ import LevelGenerator from './level_generator';
 import * as Util from './util';
 
 class Game {
-  constructor(width, height, players) {
-    // this.height = height;
-    // Game.FLOORSIZE = this.height / 5;
-    // Game.BOXSIZE = this.height / 10;
+  constructor(players) {
     this.LevelGenerator = new LevelGenerator(Game.BOXSIZE, Game.FLOORSIZE, Game.WIDTH, Game.HEIGHT);
     this.spikes = [];
     this.boxes = [];

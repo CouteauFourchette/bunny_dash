@@ -6,14 +6,12 @@ class GameView {
   constructor(ctx, canvas) {
     this.ctx = ctx;
     this.canvas = canvas;
-    this.game = new Game(canvas.width, (canvas.width / 2));
   }
 
   start() {
-    // this.game = new Game(this.canvas.width, (this.canvas.width / 2));
-    const player = new HumanPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 5, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)], this.canvas);
-    const bot = new BotPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 3, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)]);
-    this.game = new Game(this.canvas.width, (this.canvas.width / 2), [player, bot]);
+    let player = new HumanPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 5, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)], this.canvas);
+    if (this.bot) player = new BotPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 3, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)]);
+    this.game = new Game([player]);
     this.lastTime = 0;
     this.score = 0;
     requestAnimationFrame(this.animate.bind(this));
@@ -31,7 +29,7 @@ class GameView {
     this.ctx.fillStyle = 'white';
     this.ctx.font = '40px Arial';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText(`Score: ${Math.round(this.score)}`, (this.game.width - 250), 80);
+    this.ctx.fillText(`Score: ${Math.round(this.score)}`, (Game.WIDTH - 250), 80);
     if (this.bot) {
       this.ctx.fillText('AI Bot Mode', 150, 80);
     } else {
@@ -43,16 +41,16 @@ class GameView {
 
 
   gameOver() {
-    this.ctx.clearRect(0, 0, this.game.width, this.game.height);
+    this.ctx.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
     this.ctx.fillStyle = 'transparent';
-    this.ctx.fillRect(0, 0, this.game.width, this.game.height);
+    this.ctx.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
     this.ctx.fillStyle = 'white';
     this.ctx.font = '80px Arial';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText('Game Over', this.game.width / 2, (this.game.height / 2) - 50);
-    this.ctx.fillText(`Score: ${Math.round(this.score)}`, this.game.width / 2, (this.game.height / 2) + 50);
+    this.ctx.fillText('Game Over', Game.WIDTH / 2, (Game.HEIGHT / 2) - 50);
+    this.ctx.fillText(`Score: ${Math.round(this.score)}`, Game.WIDTH / 2, (Game.HEIGHT / 2) + 50);
     this.ctx.font = '50px Arial';
-    this.ctx.fillText('Press Space or Click to start', this.game.width / 2, (this.game.height / 2) + 150);
+    this.ctx.fillText('Press Space or Click to start', Game.WIDTH / 2, (Game.HEIGHT / 2) + 150);
     this.ctx.font = '40px Arial';
     if (this.bot) {
       this.ctx.fillText('AI Bot Mode', 150, 80);

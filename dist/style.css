@@ -31,6 +31,13 @@ h1 {
   background: #1ECDCE linear-gradient(to top left, #48A7D1 0%, #1ECDCE 100%);
 }
 
+#game-menu {
+  width: 100%;
+  display: block;
+  margin: 0;
+  background: #1ECDCE linear-gradient(to top left, #48A7D1 0%, #1ECDCE 100%);
+}
+
 .buttons {
   display: flex;
 }
