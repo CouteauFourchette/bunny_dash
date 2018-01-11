@@ -1,10 +1,11 @@
 import { cloneDeep } from 'lodash';
 import Player from './player';
+import Game from '../game';
 
 
 function closeObjects(game, idx) {
   return game.movingObjects().filter(object =>
-    (object.pos[0] < (game.players[idx].pos[0] + (3 * game.boxSize)) &&
+    (object.pos[0] < (game.players[idx].pos[0] + (3 * Game.BOXSIZE)) &&
       (object.pos[0] > game.players[idx].pos[0])));
 }
 
@@ -15,7 +16,7 @@ class BotPlayer extends Player {
     const simulate = cloneDeep(game);
     if (game.players[idx].speed === 0) {
       if (closeObjects(game, idx).length > 0) {
-        simulate.players[idx].jump(game.height * 0.27);
+        simulate.players[idx].jump(Game.HEIGHT * 0.27);
         simulate.move(timeDelta);
         while (simulate.players[idx].speed !== 0 && !simulate.over) {
           simulate.checkCollisions(simulate.players[idx]);

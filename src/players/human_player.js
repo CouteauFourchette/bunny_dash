@@ -8,21 +8,11 @@ class HumanPlayer extends Player {
   }
 
   handleMouseClick(jump) {
-    // if (this.game.over) {
-    //   this.start();
-    // } else {
-      
-    // }
     this.isJumping = jump;
   }
 
   handleKeyPress(e, jump) {
     if (e.keyCode === 32) {
-      // if (this.game.over) {
-      //   this.start();
-      // } else {
-        
-      // }
       this.isJumping = jump;
     }
   }

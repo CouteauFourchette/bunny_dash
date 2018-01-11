@@ -6,24 +6,20 @@ import LevelGenerator from './level_generator';
 import * as Util from './util';
 
 class Game {
-  constructor(width, height, players) {
-    this.width = width;
-    this.height = height;
-    this.floorSize = this.height / 5;
-    this.boxSize = this.height / 10;
-    this.LevelGenerator = new LevelGenerator(this.boxSize, this.floorSize, this.width, this.height);
+  constructor(players) {
+    this.LevelGenerator = new LevelGenerator(Game.BOXSIZE, Game.FLOORSIZE, Game.WIDTH, Game.HEIGHT);
     this.spikes = [];
     this.boxes = [];
     this.springs = [];
     this.players = players;
-    this.floor = new Floor(this.width, this.floorSize);
+    this.floor = new Floor(Game.WIDTH, Game.FLOORSIZE);
     this.over = false;
   }
 
   draw(ctx) {
-    ctx.clearRect(0, 0, this.width, this.height);
+    ctx.clearRect(0, 0, Game.WIDTH, Game.HEIGHT);
     ctx.fillStyle = 'transparent';
-    ctx.fillRect(0, 0, this.width, this.height);
+    ctx.fillRect(0, 0, Game.WIDTH, Game.HEIGHT);
     
     this.floor.draw(ctx);
 
@@ -61,18 +57,19 @@ class Game {
     this.players.forEach((player, idx) => {
       this.checkCollisions(player);
       player.getAction(this, idx);
-      if (player.isJumping) player.jump(this.height * 0.27);
+      if (player.isJumping) player.jump(Game.HEIGHT * 0.27);
     });
     this.move(delta);
     this.spawn();
     this.players = this.players.filter(player => !player.dead);
+    if (this.players.length === 0) this.over = true;
   }
 
   move(delta) {
     const objects = this.movingObjects();
     objects.forEach((object) => {
       object.move(delta);
-      if (object.pos[0] < -this.boxSize) {
+      if (object.pos[0] < -Game.BOXSIZE) {
         this.remove(object);
       }
     });
@@ -104,31 +101,31 @@ class Game {
     switch (this.checkBoxCollisions(player)) {
       case 'top':
         player.speed = 0;
-        player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
+        player.pos[1] = Math.round(player.pos[1] / Game.BOXSIZE) * Game.BOXSIZE;
         break;
       case 'side':
         player.dead = true;
         break;
       default:
-        player.speed = (this.boxSize / 7);
+        player.speed = (Game.BOXSIZE / 7);
         break;
     }
     if (this.checkFloorCollision(player)) {
       player.speed = 0;
-      player.pos[1] = Math.round(player.pos[1] / this.boxSize) * this.boxSize;
+      player.pos[1] = Math.round(player.pos[1] / Game.BOXSIZE) * Game.BOXSIZE;
     }
     if (this.checkSpikeCollisions(player) !== 'none') {
       player.dead = true;
     }
     if (this.checkSpringCollisions(player) === 'top') {
-      player.jump(this.height * 0.37);
+      player.jump(Game.HEIGHT * 0.37);
     }
   }
 
   checkSpikeCollisions(player) {
     for (let i = 0; i < this.spikes.length; i += 1) {
       const spike = this.spikes[i];
-      if (spike.pos[0] > player.pos[0] + this.boxSize) return 'none';
+      if (spike.pos[0] > player.pos[0] + Game.BOXSIZE) return 'none';
       if (Util.checkCollision(player, spike) !== 'none') {
         return 'collision';
       }
@@ -139,7 +136,7 @@ class Game {
   checkSpringCollisions(player) {
     for (let i = 0; i < this.springs.length; i += 1) {
       const spring = this.springs[i];
-      if (spring.pos[0] > player.pos[0] + this.boxSize) return 'none';
+      if (spring.pos[0] > player.pos[0] + Game.BOXSIZE) return 'none';
       if (Util.checkCollision(player, spring) === 'top') {
         spring.on = true;
         return 'top';
@@ -177,8 +174,10 @@ class Game {
   }
 }
 
-Game.ROWS = 10;
-Game.COLUMNS = 60;
+Game.WIDTH = 1680;
+Game.HEIGHT = 840;
+Game.BOXSIZE = Game.HEIGHT / 10;
+Game.FLOORSIZE = Game.HEIGHT / 5;
 Game.BG_COLOR = '#5DBCD2';
 
 export default Game;
