@@ -12,9 +12,22 @@ class GameView {
 
   start() {
     this.bindKeys(false);
-    let player = new HumanPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 5, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)], this.canvas);
-    if (this.bot) player = new BotPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 3, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)]);
-    this.game = new Game([player]);
+
+    let players = [];
+
+    switch (this.mode) {
+      case 'bot':
+        players = [new BotPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 3, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)])];
+        break;
+      case 'genetic':
+        players = [new GeneticPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 3, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)])];
+        break;
+      default:
+        players = [new HumanPlayer(Game.BOXSIZE, Game.BOXSIZE, [Game.BOXSIZE * 5, (Game.HEIGHT - Game.FLOORSIZE - Game.BOXSIZE)], this.canvas)];
+        break;
+    }
+    
+    this.game = new Game(players);
     this.lastTime = 0;
     this.score = 0;
     requestAnimationFrame(this.animate.bind(this));
@@ -33,10 +46,16 @@ class GameView {
     this.ctx.font = '40px Arial';
     this.ctx.textAlign = 'center';
     this.ctx.fillText(`Score: ${Math.round(this.score)}`, (Game.WIDTH - 250), 80);
-    if (this.bot) {
-      this.ctx.fillText('AI Bot Mode', 150, 80);
-    } else {
-      this.ctx.fillText('Human Mode', 150, 80);
+    switch (this.mode) {
+      case 'bot':
+        this.ctx.fillText('AI Bot Mode', 150, 80);
+        break;
+      case 'genetic':
+        this.ctx.fillText('Genetics Mode', 150, 80);
+        break;
+      default:
+        this.ctx.fillText('Human Mode', 150, 80);
+        break;
     }
     this.lastTime = time;
     requestAnimationFrame(this.animate.bind(this));
@@ -56,10 +75,16 @@ class GameView {
     this.ctx.font = '50px Arial';
     this.ctx.fillText('Press Space or Click to start', Game.WIDTH / 2, (Game.HEIGHT / 2) + 150);
     this.ctx.font = '40px Arial';
-    if (this.bot) {
-      this.ctx.fillText('AI Bot Mode', 150, 80);
-    } else {
-      this.ctx.fillText('Human Mode', 150, 80);
+    switch (this.mode) {
+      case 'bot':
+        this.ctx.fillText('AI Bot Mode', 150, 80);
+        break;
+      case 'genetic':
+        this.ctx.fillText('Genetics Mode', 150, 80);
+        break;
+      default:
+        this.ctx.fillText('Human Mode', 150, 80);
+        break;
     }
   }
 

@@ -25461,14 +25461,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var humanButton = document.getElementById('human');
   humanButton.addEventListener('click', function () {
-    gameView.bot = false;
+    gameView.mode = 'human';
     gameView.game.over = true;
     gameView.gameOver();
   });
 
   var aiButton = document.getElementById('ai');
   aiButton.addEventListener('click', function () {
-    gameView.bot = true;
+    gameView.mode = 'bot';
+    gameView.game.over = true;
+    gameView.gameOver();
+  });
+
+  var geneticsButton = document.getElementById('genetics');
+  geneticsButton.addEventListener('click', function () {
+    gameView.mode = 'genetic';
     gameView.game.over = true;
     gameView.gameOver();
   });
@@ -25526,9 +25533,22 @@ var GameView = function () {
     key: 'start',
     value: function start() {
       this.bindKeys(false);
-      var player = new _human_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 5, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE], this.canvas);
-      if (this.bot) player = new _bot_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 3, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE]);
-      this.game = new _game2.default([player]);
+
+      var players = [];
+
+      switch (this.mode) {
+        case 'bot':
+          players = [new _bot_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 3, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE])];
+          break;
+        case 'genetic':
+          players = [new _genetic_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 3, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE])];
+          break;
+        default:
+          players = [new _human_player2.default(_game2.default.BOXSIZE, _game2.default.BOXSIZE, [_game2.default.BOXSIZE * 5, _game2.default.HEIGHT - _game2.default.FLOORSIZE - _game2.default.BOXSIZE], this.canvas)];
+          break;
+      }
+
+      this.game = new _game2.default(players);
       this.lastTime = 0;
       this.score = 0;
       requestAnimationFrame(this.animate.bind(this));
@@ -25548,10 +25568,16 @@ var GameView = function () {
       this.ctx.font = '40px Arial';
       this.ctx.textAlign = 'center';
       this.ctx.fillText('Score: ' + Math.round(this.score), _game2.default.WIDTH - 250, 80);
-      if (this.bot) {
-        this.ctx.fillText('AI Bot Mode', 150, 80);
-      } else {
-        this.ctx.fillText('Human Mode', 150, 80);
+      switch (this.mode) {
+        case 'bot':
+          this.ctx.fillText('AI Bot Mode', 150, 80);
+          break;
+        case 'genetic':
+          this.ctx.fillText('Genetics Mode', 150, 80);
+          break;
+        default:
+          this.ctx.fillText('Human Mode', 150, 80);
+          break;
       }
       this.lastTime = time;
       requestAnimationFrame(this.animate.bind(this));
@@ -25571,10 +25597,16 @@ var GameView = function () {
       this.ctx.font = '50px Arial';
       this.ctx.fillText('Press Space or Click to start', _game2.default.WIDTH / 2, _game2.default.HEIGHT / 2 + 150);
       this.ctx.font = '40px Arial';
-      if (this.bot) {
-        this.ctx.fillText('AI Bot Mode', 150, 80);
-      } else {
-        this.ctx.fillText('Human Mode', 150, 80);
+      switch (this.mode) {
+        case 'bot':
+          this.ctx.fillText('AI Bot Mode', 150, 80);
+          break;
+        case 'genetic':
+          this.ctx.fillText('Genetics Mode', 150, 80);
+          break;
+        default:
+          this.ctx.fillText('Human Mode', 150, 80);
+          break;
       }
     }
   }, {
@@ -43134,6 +43166,10 @@ var _player = __webpack_require__(76);
 
 var _player2 = _interopRequireDefault(_player);
 
+var _game = __webpack_require__(97);
+
+var _game2 = _interopRequireDefault(_game);
+
 var _spring = __webpack_require__(72);
 
 var _spring2 = _interopRequireDefault(_spring);
@@ -43206,8 +43242,8 @@ var GeneticPlayer = function (_Player) {
             type2 = 0;
             break;
         }
-        positionX = closestObjects.pos[0] / game.width;
-        positionY = closestObjects.pos[1] / game.width;
+        positionX = closestObjects.pos[0] / _game2.default.WIDTH;
+        positionY = closestObjects.pos[1] / _game2.default.HEIGHT;
       }
       var activation = this.network.activate([type1, type2, positionX, positionY])[0];
       if (activation > 0) {

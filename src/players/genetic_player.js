@@ -1,4 +1,5 @@
 import Player from './player';
+import Game from '../game';
 import Spring from '../moving_objects/spring';
 import Spike from '../moving_objects/spike';
 import Block from '../moving_objects/block';
@@ -45,8 +46,8 @@ class GeneticPlayer extends Player {
           type2 = 0;
           break;
       }
-      positionX = closestObjects.pos[0] / game.width;
-      positionY = closestObjects.pos[1] / game.width;
+      positionX = closestObjects.pos[0] / Game.WIDTH;
+      positionY = closestObjects.pos[1] / Game.HEIGHT;
     }
     const activation = this.network.activate([type1, type2, positionX, positionY])[0];
     if (activation > 0) {

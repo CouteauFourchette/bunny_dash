@@ -11,14 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const humanButton = document.getElementById('human');
   humanButton.addEventListener('click', () => {
-    gameView.bot = false;
+    gameView.mode = 'human';
     gameView.game.over = true;
     gameView.gameOver();
   });
 
   const aiButton = document.getElementById('ai');
   aiButton.addEventListener('click', () => {
-    gameView.bot = true;
+    gameView.mode = 'bot';
+    gameView.game.over = true;
+    gameView.gameOver();
+  });
+
+  const geneticsButton = document.getElementById('genetics');
+  geneticsButton.addEventListener('click', () => {
+    gameView.mode = 'genetic';
     gameView.game.over = true;
     gameView.gameOver();
   });
